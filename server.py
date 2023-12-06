@@ -5,8 +5,10 @@ class Server:
         self.db = mysql.connector.connect(
             host="localhost",
             user="austin",
-            password="password",
+            password="pwrd",
             database="patient_tracker"
         )
 
 
+# if __name__ == "__main__":
+#     server = Server()
