@@ -1,4 +1,5 @@
 import tkinter as tk
+from model import Model
 from controller import Controller
 from server import Server
 
@@ -6,7 +7,8 @@ class PatientTracker:
     def __init__(self):
         self.root = tk.Tk()
         self.server = Server()
-        self.controller = Controller(self.root, self.server)
+        self.model = Model(self.server)
+        self.controller = Controller(self.root, self.model)
         
     def start(self):
         self.controller.show_login()
