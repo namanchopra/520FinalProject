@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox
+from controller import Controller
 
 class Page(tk.Toplevel):
-    def __init__(self, controller, title):
+    def __init__(self, controller: Controller, title: str):
         super().__init__(controller.root)
         self.controller = controller
         self.title(title)
@@ -18,8 +19,11 @@ class Page(tk.Toplevel):
     def close(self):
         self.destroy()
 
+    def report_err(self, title: str, msg: str):
+        messagebox.showerror(title, msg)
+
 class Login(Page):
-    def __init__(self, controller):
+    def __init__(self, controller: Controller):
         super().__init__(controller, "Login")
         self.label_email = tk.Label(self, text="Email:")
         self.label_pw = tk.Label(self, text="Password:")
@@ -29,7 +33,7 @@ class Login(Page):
 
         self.label_email.pack()
         self.entry_email.pack()
-        self.label_email.pack()
+        self.label_pw.pack()
         self.entry_pw.pack()
         self.btn_login.pack()
     
@@ -39,13 +43,13 @@ class Login(Page):
         self.controller.login(email, pw)
 
 class Doctor(Page):
-    def __init__(self, controller):
+    def __init__(self, controller: Controller):
         super().__init__(controller, "Doctor Portal")
 
 class Patient(Page):
-    def __init__(self, controller):
+    def __init__(self, controller: Controller):
         super().__init__(controller, "Patient Portal")
 
 class Admin(Page):
-    def __init__(self, controller):
+    def __init__(self, controller: Controller):
         super().__init__(controller, "Admin Portal")
