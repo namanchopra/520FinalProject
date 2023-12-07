@@ -6,6 +6,8 @@ class Model:
         self.server = server
         self.user_tables = ["doctor", "patient", "administrator"]
         self.user = None
+        self.auth = None
+        self.table = []
 
     def login(self, email, pw):
         """Check if entered email and password pair are values in any user tables in the database"""
@@ -14,8 +16,14 @@ class Model:
             result = self.server.authenticate(table, email, pw)
             if result is not None:
                 self.user = result
-                result = table
-                print(self.user, table)
+                self.auth = table
                 break
-        # print("received", len(result))
+        return self.auth # return the user's authorization, or None if no user match
+
+    def get_docs_patients(self):
+        result = self.server.docs_patients(self.user[0])
+        return result
+    
+    def get_patient_records(self, pat):
+        result = self.server.get_patient_records(pat)
         return result

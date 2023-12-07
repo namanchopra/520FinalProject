@@ -28,6 +28,7 @@ class Controller:
 
     def show_doctor(self):
         self.doctor_page.show()
+        self.doctor_page.update_content()
         self.current_page = self.doctor_page
 
     def hide_all(self):
@@ -53,3 +54,9 @@ class Controller:
         else:
             self.show_login()
             self.current_page.report_err("Invalid Credentials", "Please try to log in again with your email and password.")
+
+    def get_docs_patients(self):
+        return self.model.get_docs_patients()
+
+    def get_patient_records(self, pat):
+        return self.model.get_patient_records(pat)
