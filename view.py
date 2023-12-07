@@ -1,10 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox
-from controller import Controller
 
 class Page(tk.Toplevel):
     """Abstract view class which describes a page that is shown to the user"""
-    def __init__(self, controller: Controller, title: str):
+    def __init__(self, controller, title: str):
         super().__init__(controller.root)
         self.controller = controller
         self.title(title)
@@ -25,7 +24,7 @@ class Page(tk.Toplevel):
 
 class Login(Page):
     """Child class of Page, describes the login screen shown to the user upon opening the application"""
-    def __init__(self, controller: Controller):
+    def __init__(self, controller):
         super().__init__(controller, "Login")
         self.label_email = tk.Label(self, text="Email:")
         self.label_pw = tk.Label(self, text="Password:")
@@ -45,13 +44,13 @@ class Login(Page):
         self.controller.login(email, pw)
 
 class Doctor(Page):
-    def __init__(self, controller: Controller):
+    def __init__(self, controller):
         super().__init__(controller, "Doctor Portal")
 
 class Patient(Page):
-    def __init__(self, controller: Controller):
+    def __init__(self, controller):
         super().__init__(controller, "Patient Portal")
 
 class Admin(Page):
-    def __init__(self, controller: Controller):
+    def __init__(self, controller):
         super().__init__(controller, "Admin Portal")

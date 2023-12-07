@@ -23,10 +23,18 @@ class Server:
             cursor.close()
             return result
 
-        except mysql.connector.Error as err:
-            print(f"Error: {err}")
+        except mysql.connector.Error as e:
+            print(f"Error: {e}")
             return None
 
+    def authenticate(self, table, email, pw):
+        stmnt = "SELECT * FROM " + table + " WHERE email = %s AND pw = %s"
+        vals = (email, pw)
+        result = self.query(stmnt, vals)
+        if len(result) == 1:
+            return result[0]
+        else:
+            return None
 
 # if __name__ == "__main__":
 #     server = Server()

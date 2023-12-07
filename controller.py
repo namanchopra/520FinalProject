@@ -1,4 +1,4 @@
-import tkinter as tk
+from tkinter import Toplevel
 from view import Login, Doctor, Patient, Admin
 from model import Model
 
@@ -32,17 +32,17 @@ class Controller:
 
     def hide_all(self):
         for child in self.root.winfo_children():
-            if isinstance(child, tk.Toplevel):
+            if isinstance(child, Toplevel):
                 child.withdraw()
 
     def show_page(self, user):
         """show page based on the type of user"""
         self.hide_all()
-        if user == "doctor":
+        if user == self.model.user_tables[0]: # doctor
             self.show_doctor()
-        elif user == "patient":
+        elif user == self.model.user_tables[1]: # patient
             self.show_patient()
-        elif user == "admin":
+        elif user == self.model.user_tables[2]: # administrator
             self.show_admin()
         
     def login(self, email, pw):
@@ -50,6 +50,6 @@ class Controller:
         user = self.model.login(email, pw)
         if user is not None:
             self.show_page(user)
-
         else:
-            self.doctor_page.report_err("Invalid Credentials", "Please try to log in again with your email and password.")
+            self.show_login()
+            self.current_page.report_err("Invalid Credentials", "Please try to log in again with your email and password.")
