@@ -3,6 +3,7 @@ from view import Login, Doctor, Patient, Admin
 from model import Model
 
 class Controller:
+    """Describes the Controller class which interacts with the Model given certain user input"""
     def __init__(self, root, model: Model):
         self.root = root
         self.model = model
@@ -35,6 +36,7 @@ class Controller:
                 child.withdraw()
 
     def show_page(self, user):
+        """show page based on the type of user"""
         self.hide_all()
         if user == "doctor":
             self.show_doctor()
@@ -44,6 +46,7 @@ class Controller:
             self.show_admin()
         
     def login(self, email, pw):
+        """use model to check credentials and update view"""
         user = self.model.login(email, pw)
         if user is not None:
             self.show_page(user)

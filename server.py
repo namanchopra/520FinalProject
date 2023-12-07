@@ -1,6 +1,7 @@
 import mysql.connector
 
 class Server:
+    """Describes the Server class which connects to a MySQL database to run queries and returns the output to the Model"""
     def __init__(self):
         self.db = mysql.connector.connect(
             host="localhost",
@@ -11,6 +12,7 @@ class Server:
         self.cursor = self.db.cursor()
 
     def query(self, stmnt, vals=None):
+        """uses a statement and values to query the database"""
         try:
             if not self.db.is_connected():
                 self.db.reconnect()

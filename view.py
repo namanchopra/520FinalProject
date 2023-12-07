@@ -3,6 +3,7 @@ from tkinter import messagebox
 from controller import Controller
 
 class Page(tk.Toplevel):
+    """Abstract view class which describes a page that is shown to the user"""
     def __init__(self, controller: Controller, title: str):
         super().__init__(controller.root)
         self.controller = controller
@@ -23,6 +24,7 @@ class Page(tk.Toplevel):
         messagebox.showerror(title, msg)
 
 class Login(Page):
+    """Child class of Page, describes the login screen shown to the user upon opening the application"""
     def __init__(self, controller: Controller):
         super().__init__(controller, "Login")
         self.label_email = tk.Label(self, text="Email:")
