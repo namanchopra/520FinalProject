@@ -10,11 +10,6 @@ class Server:
         )
         self.cursor = self.db.cursor()
 
-    def login(self, email, pw):
-        result = self.query("SELECT * FROM doctor")
-        print("received", len(result))
-        return True
-
     def query(self, stmnt, vals=None):
         try:
             if not self.db.is_connected():
