@@ -88,13 +88,7 @@ class Server:
         stmnt = "SELECT * FROM record WHERE pat = %s"
         val = (id[0],)
         result = self._query(stmnt, val)
-        print(result)
         return result
 
-if __name__ == "__main__":
-    server = Server()
-    doc = server.authenticate("doctor", "joey@gmail.com", "pw")
-    print(doc[0])
-    patient = server.docs_patients(doc[0])
-    print(patient)
+
     

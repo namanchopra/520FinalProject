@@ -1,17 +1,52 @@
 import tkinter as tk
+from tkinter import Toplevel
 from tkinter import messagebox
 from PIL import Image, ImageTk
 
+class View:
+    def __init__(self, controller):
+        self.root = tk.Tk()
+        self.controller = controller
+        self.login_page = Login(self, self.controller)
+        self.admin_page = Admin(self, self.controller)
+        self.patient_page = Patient(self, self.controller)
+        self.doctor_page = Doctor(self, self.controller)
+        self.current_page = self.login_page
+
+    def show_login(self):
+        self.hide_all()
+        self.login_page.show()
+        self.current_page = self.login_page
+
+    def show_admin(self):
+        self.admin_page.show()
+        self.current_page = self.admin_page
+
+    def show_patient(self):
+        self.patient_page.show()
+        self.current_page = self.patient_page
+
+    def show_doctor(self):
+        self.doctor_page.show()
+        self.doctor_page.update_content()
+        self.current_page = self.doctor_page
+
+    def hide_all(self):
+        for child in self.root.winfo_children():
+            if isinstance(child, Toplevel):
+                child.withdraw()
+
+
 class Page(tk.Toplevel):
     """Abstract view class which describes a page that is shown to the user"""
-    def __init__(self, controller, title: str):
-        super().__init__(controller.root)
-        self.controller = controller
+    def __init__(self, view: View, title: str):
+        super().__init__(view.root)
+        self.view = view
         self.title(title)
         self.geometry("500x500")
 
     def show(self):
-        self.controller.hide_all()
+        self.view.hide_all()
         self.deiconify()
 
     def hide(self):
@@ -25,8 +60,9 @@ class Page(tk.Toplevel):
 
 class Login(Page):
     """Child class of Page, describes the login screen shown to the user upon opening the application"""
-    def __init__(self, controller):
-        super().__init__(controller, "Login")
+    def __init__(self, view: View, controller):
+        super().__init__(view, "Login")
+        self.controller = controller
         self.title_label = tk.Label(self, text="Patient Tracker Login")
         self.logo_img = ImageTk.PhotoImage(Image.open("./img/logo.png").resize((100,100)))
         self.logo_label = tk.Label(self, image=self.logo_img)
@@ -50,8 +86,10 @@ class Login(Page):
         self.controller.login(email, pw)
 
 class Doctor(Page):
-    def __init__(self, controller):
-        super().__init__(controller, "Doctor Portal")
+    def __init__(self, view: View, controller):
+        super().__init__(view, "Doctor Portal")
+        self.controller = controller
+        self.view = view
         self.label = tk.Label(self, text="List of Patients:")
         self.patient_list = tk.Listbox(self, selectmode=tk.SINGLE, width=50, height=20)
         self.records_btn = tk.Button(self, text="View Medical Records", command=self.view_records)
@@ -65,7 +103,7 @@ class Doctor(Page):
 
     def update_content(self):
         self.patient_list.delete(0, tk.END)
-        patients = self.controller.get_docs_patients()
+        patients = self.controller.model.get_docs_patients()
         for patient in patients:
             self.patient_list.insert(tk.END, patient)
         self.show_patients = True
@@ -81,7 +119,7 @@ class Doctor(Page):
                     self.patient_list.insert(tk.END, record)
                 self.show_patients = False
             else:
-                record = self.patient_list.get(selection)
+                record = self.patient_list.get(selection[0])
                 messagebox.showinfo(f"Record {record[0]} - {record[4]}", f"{record[3]}")
         else:
             messagebox.showwarning("No Patient Selected", "Please select a patient to view their medical records.")
@@ -103,9 +141,9 @@ class Doctor(Page):
         #     messagebox.showwarning("No Patient Selected", "Please select a patient to view their medical records.")
 
 class Patient(Page):
-    def __init__(self, controller):
-        super().__init__(controller, "Patient Portal")
+    def __init__(self, view, controller):
+        super().__init__(view, "Patient Portal")
 
 class Admin(Page):
-    def __init__(self, controller):
-        super().__init__(controller, "Admin Portal")
+    def __init__(self, view, controller):
+        super().__init__(view, "Admin Portal")

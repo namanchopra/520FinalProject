@@ -2,8 +2,8 @@ from server import Server
 
 class Model:
     """Describes the Model class which interacts with the Server to update the View"""
-    def __init__(self, server: Server):
-        self.server = server
+    def __init__(self):
+        self.server = Server()
         self.user_tables = ["doctor", "patient", "administrator"]
         self.user = None
         self.auth = None
@@ -21,7 +21,10 @@ class Model:
         return self.auth # return the user's authorization, or None if no user match
 
     def get_docs_patients(self):
-        result = self.server.docs_patients(self.user[0])
+        pats = self.server.docs_patients(self.user[0])
+        result = []
+        for pat in pats:
+            print(self.server.get_patient(pat[0]))
         return result
     
     def get_patient_records(self, pat):
