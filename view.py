@@ -26,14 +26,14 @@ class View:
         self.email_label = tk.Label(self.login_frame, text="Email:")
         self.email_label.pack(pady=5)
 
-        self.email_entry = tk.Entry(self.login_frame, width=20)
-        self.email_entry.pack(pady=5)
+        self.email_login = tk.Entry(self.login_frame, width=20)
+        self.email_login.pack(pady=5)
 
         self.pw_label = tk.Label(self.login_frame, text="Password:")
         self.pw_label.pack(pady=5)
 
-        self.pw_entry = tk.Entry(self.login_frame, show="*", width=20)
-        self.pw_entry.pack(pady=5)
+        self.pw_login = tk.Entry(self.login_frame, show="*", width=20)
+        self.pw_login.pack(pady=5)
 
         self.login_btn = tk.Button(self.login_frame, text="Login", command=self.login)
         self.login_btn.pack(pady=10)
@@ -57,8 +57,8 @@ class View:
                             }
 
     def login(self):
-        email = self.email_entry.get()
-        pw = self.pw_entry.get()
+        email = self.email_login.get()
+        pw = self.pw_login.get()
         authorized_tabs = self.controller.login(email, pw)
 
         if authorized_tabs:
@@ -83,7 +83,7 @@ class View:
     def show_tabs(self, authorized_tabs):
         for tab_name in authorized_tabs:
             frame = tk.Frame(self.tabControl, bg=self.color)
-            self.controller.create_tab(tab_name, frame)
+            self.create_tab(tab_name, frame)
             self.tabControl.add(frame, text=tab_name)
             self.tab_frames[tab_name] = frame
 
@@ -104,6 +104,61 @@ class View:
             content = f"This is the {tab_name} page"
         self.content_label.config(text=content)
 
+    def create_tab(self, tab_name, frame):
+        if tab_name == "Patient Portal":
+            self.create_patientPortal(frame)
+
+    def create_patientPortal(self, frame):
+        self.icon = ImageTk.PhotoImage(Image.open("./img/user.png").resize((100,100)))
+        icon_label = tk.Label(frame, image=self.icon, bg=self.color)
+        
+        first_label = tk.Label(frame, text=f"First Name:")
+        self.first_pat = tk.Entry(frame)
+        self.first_pat.insert(0, f"{self.model.user[3]}")
+
+        last_label = tk.Label(frame, text=f"Last Name:")
+        self.last_pat = tk.Entry(frame)
+        self.last_pat.insert(0, f"{self.model.user[4]}")
+
+        email_label = tk.Label(frame, text=f"Email:")
+        self.email_pat = tk.Entry(frame)
+        self.email_pat.insert(0, f"{self.model.user[1]}")
+
+        age_label = tk.Label(frame, text=f"Age:")
+        self.age_pat = tk.Entry(frame)
+        self.age_pat.insert(0, f"{self.model.user[5]}")
+
+        insurance_label = tk.Label(frame, text=f"Insurance:")
+        self.insurance_pat = tk.Entry(frame)
+        self.insurance_pat.insert(0, f"{self.model.user[6]}")
+
+        update_btn = tk.Button(frame, text="Update My Info", command=self.updatePatient)
+        
+        icon_label.grid(row=0, column=0, columnspan=2, pady=5)
+        first_label.grid(row=1, column=0, padx=5, pady=5, sticky='e')
+        self.first_pat.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+        last_label.grid(row=2, column=0, padx=5, pady=5, sticky='e')
+        self.last_pat.grid(row=2, column=1, padx=5, pady=5, sticky='w')
+        email_label.grid(row=3, column=0, padx=5, pady=5, sticky='e')
+        self.email_pat.grid(row=3, column=1, padx=5, pady=5, sticky='w')
+        age_label.grid(row=4, column=0, padx=5, pady=5, sticky='e')
+        self.age_pat.grid(row=4, column=1, padx=5, pady=5, sticky='w')
+        insurance_label.grid(row=5, column=0, padx=5, pady=5, sticky='e')
+        self.insurance_pat.grid(row=5, column=1, padx=5, pady=5, sticky='w')
+        update_btn.grid(row=6, column=0, columnspan=2, pady=5)
+
+        for i in range(2):
+            frame.columnconfigure(i, weight=1)
+        for i in range(7):
+            frame.rowconfigure(i, weight=1)
+
+    def updatePatient(self):
+        email = self.email_pat.get()
+        first = self.first_pat.get()
+        last = self.last_pat.get()
+        age = self.age_pat.get()
+        insurance = self.insurance_pat.get()
+        self.controller.updatePatient(email, first, last, age, insurance)
 
 class SignupDoctor:
     def __init__(self, root, controller, model):
