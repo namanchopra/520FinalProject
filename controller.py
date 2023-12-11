@@ -112,6 +112,22 @@ class Controller:
             else:
                 messagebox.showwarning("No Record Selected", "Please select a record to view details.")
 
+    def update_prescripList(self):
+        self.view.prescrip_list.delete(0, tk.END)
+        prescrips = self.model.get_prescriptions()
+        for prescrip in prescrips:
+            self.view.prescrip_list.insert(tk.END, prescrip)
+
+    def view_prescrip(self):
+        selection = self.view.prescrip_list.curselection()
+        if selection:
+            prescrip = self.view.prescrip_list.get(selection)
+            prescrip = self.model.get_prescription()
+            messagebox.showinfo(f"Prescription", f"name: {prescrip}")
+        else:
+            messagebox.showwarning("No Prescription Selected", "Please select a prescription to view details.")
+
+
     def create_patient(self, email, pw, first, last, age):
         self.model.new_patient()
 

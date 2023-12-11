@@ -107,7 +107,7 @@ class View:
             self.controller.update_recordsList()
         elif tab_name == "Prescriptions":
             self.create_prescriptionPage(frame)
-            self.update_prescripList()
+            self.controller.update_prescripList()
 
     def create_patientPortal(self, frame):
         label = tk.Label(frame, text="My Info")
@@ -222,7 +222,7 @@ class View:
     def create_prescriptionPage(self, frame):
         label = tk.Label(frame, text="My Prescriptions")
         self.prescrip_list = tk.Listbox(frame, selectmode=tk.SINGLE, width=50, height=20)
-        self.prescrip_btn = tk.Button(frame, text="View Prescription", command=self.view_prescrip)
+        self.prescrip_btn = tk.Button(frame, text="View Prescription", command=self.controller.view_prescrip)
         
         label.pack(pady=10)
         self.prescrip_list.pack(pady=5)
@@ -235,22 +235,6 @@ class View:
             
             self.deleteprescrip_btn.pack(pady=5)
             self.add_presc_btn.pack(pady=5)
-
-
-    def view_prescrip(self):
-        selection = self.prescrip_list.curselection()
-        if selection:
-            prescrip = self.prescrip_list.get(selection)
-            prescrip = self.controller.model.get_prescription()
-            messagebox.showinfo(f"Prescription", f"name: {prescrip}")
-        else:
-            messagebox.showwarning("No Prescription Selected", "Please select a prescription to view details.")
-
-    def update_prescripList(self):
-        self.prescrip_list.delete(0, tk.END)
-        prescrips = self.controller.model.get_prescriptions()
-        for prescrip in prescrips:
-            self.prescrip_list.insert(tk.END, prescrip)
 
     def create_prescrip(self):
         pass
@@ -297,7 +281,7 @@ class View:
 
         self.controller.model.add_prescription(name, medication, dosage, expiry)
         window.destroy()
-        self.update_prescripList()
+        self.controller.update_prescripList()
 
 
 class SignupDoctor:
