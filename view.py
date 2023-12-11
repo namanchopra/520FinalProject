@@ -11,12 +11,13 @@ class View:
         self.model = model
         self.root.geometry("800x600")
         self.root.title("Patient Tracker App")
+        self.color = "#d9d9d9"
 
-        self.login_frame = tk.Frame(self.root, bg="#d9d9d9")
+        self.login_frame = tk.Frame(self.root, bg=self.color)
         self.login_frame.pack(expand=True, fill="both")
         
         self.logo_img = ImageTk.PhotoImage(Image.open("./img/logo.png").resize((100,100)))
-        self.logo_label = tk.Label(self.login_frame, image=self.logo_img, bg="#d9d9d9")
+        self.logo_label = tk.Label(self.login_frame, image=self.logo_img, bg=self.color)
         self.logo_label.pack(pady=15)
 
         self.login_label = tk.Label(self.login_frame, text="Please Login")
@@ -45,7 +46,15 @@ class View:
 
         self.tabControl = ttk.Notebook(self.root)
         self.tab_frames = {}
-        self.widgets_created = {}
+        
+        self.tab_descrip = {"Patient Portal": "Welcome to your patient portal",
+                            "Doctor Portal" : "Welcome to your doctor portal",
+                            "Patient" : "View your patients",
+                            "Doctors" : "View all doctors",
+                            "Records" : "View your medical records",
+                            "Prescriptions" : "View your prescription details",
+                            "System Logs" : "System Logging info"
+                            }
 
     def login(self):
         email = self.email_entry.get()
@@ -73,7 +82,7 @@ class View:
 
     def show_tabs(self, authorized_tabs):
         for tab_name in authorized_tabs:
-            frame = tk.Frame(self.tabControl)
+            frame = tk.Frame(self.tabControl, bg=self.color)
             self.controller.create_tab(tab_name, frame)
             self.tabControl.add(frame, text=tab_name)
             self.tab_frames[tab_name] = frame
@@ -86,19 +95,14 @@ class View:
         # self.logout_btn = tk.Button(self.root, text="Logout", command=self.logout)
         # self.logout_btn.pack(pady=10, padx=10)
 
-        self.widgets_created.update({tab_name: True for tab_name in authorized_tabs})
-
     def on_tab_change(self, event):
         current_tab = self.tabControl.select()
         tab_name = self.tabControl.tab(current_tab, "text")
-        content = self.controller.get_tab_content(tab_name)
+        if tab_name in self.tab_descrip.keys():
+            content = self.tab_descrip[tab_name]
+        else:
+            content = f"This is the {tab_name} page"
         self.content_label.config(text=content)
-
-        # if not self.widgets_created[tab_name]:
-        #     print("tabbed")
-        #     frame = self.tab_frames[tab_name]
-        #     self.controller.create_tab(tab_name, frame)
-        #     self.widgets_created[tab_name] = True
 
 
 class SignupDoctor:
