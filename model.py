@@ -2,6 +2,7 @@ from server import Server
 
 class Model:
     def __init__(self):
+        """Describes the Model class which interacts with the Server to update the View"""
         self.server = Server()
         self.user_authenticated = False
         self.user_tables = ["doctor", "patient", "administrator"]
@@ -11,6 +12,7 @@ class Model:
         self.user = None
 
     def login(self, email, pw):
+        """Check if entered email and password pair are values in any user tables in the database"""
         for table in self.user_tables:
             result = self.server.authenticate(table, email, pw)
             if result is not None:
@@ -22,6 +24,7 @@ class Model:
         return tabs
 
     def authorize_tabs(self):
+        """return the tabs which the user is authorized to view"""
         tabs = []
         if self.user_authenticated and self.auth is not None:
             tabs = self.user_tabs[self.auth]
@@ -51,3 +54,22 @@ class Model:
     def updateDoctor(self):
         print(self.user)
         # TODO update server with new user info
+
+    def get_prescription(self):
+        return "prescrip"
+
+    def get_prescriptions(self):
+        return ["p"]
+
+    def add_prescription(patient, medication, dosage):
+        first = patient.split(" ")[0]
+        last = patient.split(" ")[1]
+        print(first, last)
+
+    def get_doc(self, id):
+        doc = self.server.get_doctor(id)
+        return f"{doc[3]} {doc[4]}"
+
+    def log(self, event):
+        """logs an action to the database"""
+        pass

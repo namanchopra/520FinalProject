@@ -70,6 +70,12 @@ class Server:
         result = self._query(stmnt, val)
         return self.get_single(result)
 
+    def get_doctor(self, id):
+        stmnt = "SELECT * FROM doctor WHERE id = %s"
+        val = (id,)
+        result = self._query(stmnt, val)
+        return self.get_single(result)
+
     def docs_patients(self, doc):
         stmnt = "SELECT pat FROM patientdoc WHERE doc = %s"
         val = (doc,)
@@ -86,6 +92,7 @@ class Server:
 
     def get_patient_records(self, id):
         stmnt = "SELECT * FROM record WHERE pat = %s"
+        print(id)
         val = (id[0],)
         result = self._query(stmnt, val)
         return result

@@ -10,7 +10,7 @@ class View:
         self.controller = controller
         self.model = model
         self.root.geometry("800x600")
-        self.root.title("Patient Tracker App")
+        self.root.title("Patient Tracker")
         self.color = "#d9d9d9"
 
         self.login_frame = tk.Frame(self.root, bg=self.color)
@@ -35,7 +35,7 @@ class View:
         self.pw_login = tk.Entry(self.login_frame, show="*", width=20)
         self.pw_login.pack(pady=5)
 
-        self.login_btn = tk.Button(self.login_frame, text="Login", command=self.login)
+        self.login_btn = tk.Button(self.login_frame, text="Login", command=self.controller.login)
         self.login_btn.pack(pady=10)
 
         self.signup_p_btn = tk.Button(self.login_frame, text="Sign Up as Patient", command=self.signup_patient)
@@ -52,20 +52,9 @@ class View:
                             "Patients" : "View your patients",
                             "Doctors" : "View all doctors",
                             "Records" : "View your medical records",
-                            "Prescriptions" : "View your prescription details",
+                            "Prescriptions" : "View and manage prescriptions",
                             "System Logs" : "System Logging info"
                             }
-
-    def login(self):
-        email = self.email_login.get()
-        pw = self.pw_login.get()
-        authorized_tabs = self.controller.login(email, pw)
-
-        if authorized_tabs:
-            self.login_frame.destroy()
-            self.show_tabs(authorized_tabs)
-        else:
-            messagebox.showwarning("Invalid Credentials", "Please try to log in again with you email and password.")
 
     def logout(self):
         for frame in self.tab_frames.values():
@@ -102,7 +91,7 @@ class View:
         if tab_name in self.tab_descrip.keys():
             content = self.tab_descrip[tab_name]
         else:
-            content = f"This is the {tab_name} page"
+            content = f"{tab_name} is not handled"
         self.content_label.config(text=content)
 
     def create_tab(self, tab_name, frame):
@@ -112,9 +101,17 @@ class View:
             self.create_doctorPortal(frame)
         elif tab_name == "Patients":
             self.create_patientPage(frame)
-            self.update_patientsList()
+            self.controller.update_patientsList()
+        elif tab_name == "Records":
+            self.create_recordsPage(frame)
+            self.controller.update_recordsList()
+        elif tab_name == "Prescriptions":
+            self.create_prescriptionPage(frame)
+            self.update_prescripList()
 
     def create_patientPortal(self, frame):
+        label = tk.Label(frame, text="My Info")
+
         self.icon = ImageTk.PhotoImage(Image.open("./img/user.png").resize((100,100)))
         icon_label = tk.Label(frame, image=self.icon, bg=self.color)
         
@@ -138,35 +135,29 @@ class View:
         self.insurance_pat = tk.Entry(frame)
         self.insurance_pat.insert(0, f"{self.model.user[6]}")
 
-        update_btn = tk.Button(frame, text="Update My Info", command=self.updatePatient)
+        update_btn = tk.Button(frame, text="Update My Info", command=self.controller.updatePatient)
         
-        icon_label.grid(row=0, column=0, columnspan=2, pady=5)
-        first_label.grid(row=1, column=0, padx=5, pady=5, sticky='e')
-        self.first_pat.grid(row=1, column=1, padx=5, pady=5, sticky='w')
-        last_label.grid(row=2, column=0, padx=5, pady=5, sticky='e')
-        self.last_pat.grid(row=2, column=1, padx=5, pady=5, sticky='w')
-        email_label.grid(row=3, column=0, padx=5, pady=5, sticky='e')
-        self.email_pat.grid(row=3, column=1, padx=5, pady=5, sticky='w')
-        age_label.grid(row=4, column=0, padx=5, pady=5, sticky='e')
-        self.age_pat.grid(row=4, column=1, padx=5, pady=5, sticky='w')
-        insurance_label.grid(row=5, column=0, padx=5, pady=5, sticky='e')
-        self.insurance_pat.grid(row=5, column=1, padx=5, pady=5, sticky='w')
-        update_btn.grid(row=6, column=0, columnspan=2, pady=5)
+        label.grid(row=0, column=0, columnspan=2, pady=10)
+        icon_label.grid(row=1, column=0, columnspan=2, pady=5)
+        first_label.grid(row=2, column=0, padx=5, pady=5, sticky='e')
+        self.first_pat.grid(row=2, column=1, padx=5, pady=5, sticky='w')
+        last_label.grid(row=3, column=0, padx=5, pady=5, sticky='e')
+        self.last_pat.grid(row=3, column=1, padx=5, pady=5, sticky='w')
+        email_label.grid(row=4, column=0, padx=5, pady=5, sticky='e')
+        self.email_pat.grid(row=4, column=1, padx=5, pady=5, sticky='w')
+        age_label.grid(row=5, column=0, padx=5, pady=5, sticky='e')
+        self.age_pat.grid(row=5, column=1, padx=5, pady=5, sticky='w')
+        insurance_label.grid(row=6, column=0, padx=5, pady=5, sticky='e')
+        self.insurance_pat.grid(row=6, column=1, padx=5, pady=5, sticky='w')
+        update_btn.grid(row=7, column=0, columnspan=2, pady=5)
 
         for i in range(2):
             frame.columnconfigure(i, weight=1)
-        for i in range(7):
+        for i in range(8):
             frame.rowconfigure(i, weight=1)
 
-    def updatePatient(self):
-        email = self.email_pat.get()
-        first = self.first_pat.get()
-        last = self.last_pat.get()
-        age = self.age_pat.get()
-        insurance = self.insurance_pat.get()
-        self.controller.updatePatient(email, first, last, age, insurance)
-
     def create_doctorPortal(self, frame):
+        label = tk.Label(frame, text="My Info")
         self.icon = ImageTk.PhotoImage(Image.open("./img/doc.png").resize((100,100)))
         icon_label = tk.Label(frame, image=self.icon, bg=self.color)
         
@@ -186,17 +177,18 @@ class View:
         self.spec_doc = tk.Entry(frame)
         self.spec_doc.insert(0, f"{self.model.user[5]}")
 
-        update_btn = tk.Button(frame, text="Update My Info", command=self.updateDoctor)
+        update_btn = tk.Button(frame, text="Update My Info", command=self.controller.updateDoctor)
         
-        icon_label.grid(row=0, column=0, columnspan=2, pady=5)
-        first_label.grid(row=1, column=0, padx=5, pady=5, sticky='e')
-        self.first_doc.grid(row=1, column=1, padx=5, pady=5, sticky='w')
-        last_label.grid(row=2, column=0, padx=5, pady=5, sticky='e')
-        self.last_doc.grid(row=2, column=1, padx=5, pady=5, sticky='w')
-        email_label.grid(row=3, column=0, padx=5, pady=5, sticky='e')
-        self.email_doc.grid(row=3, column=1, padx=5, pady=5, sticky='w')
-        spec_label.grid(row=4, column=0, padx=5, pady=5, sticky='e')
-        self.spec_doc.grid(row=4, column=1, padx=5, pady=5, sticky='w')
+        label.grid(row=0, column=0, columnspan=2, pady=10)
+        icon_label.grid(row=1, column=0, columnspan=2, pady=5)
+        first_label.grid(row=2, column=0, padx=5, pady=5, sticky='e')
+        self.first_doc.grid(row=2, column=1, padx=5, pady=5, sticky='w')
+        last_label.grid(row=3, column=0, padx=5, pady=5, sticky='e')
+        self.last_doc.grid(row=3, column=1, padx=5, pady=5, sticky='w')
+        email_label.grid(row=4, column=0, padx=5, pady=5, sticky='e')
+        self.email_doc.grid(row=4, column=1, padx=5, pady=5, sticky='w')
+        spec_label.grid(row=5, column=0, padx=5, pady=5, sticky='e')
+        self.spec_doc.grid(row=5, column=1, padx=5, pady=5, sticky='w')
         update_btn.grid(row=6, column=0, columnspan=2, pady=5)
 
         for i in range(2):
@@ -204,49 +196,112 @@ class View:
         for i in range(7):
             frame.rowconfigure(i, weight=1)
 
-    def updateDoctor(self):
-        email = self.email_doc.get()
-        first = self.first_doc.get()
-        last = self.last_doc.get()
-        spec = self.spec_doc.get()
-        self.controller.updateDoctor(email, first, last, spec)
-
     def create_patientPage(self, frame):
-        label = tk.Label(frame, text="List of Patients:")
+        label = tk.Label(frame, text="My Patients")
         self.patient_list = tk.Listbox(frame, selectmode=tk.SINGLE, width=50, height=20)
-        self.records_btn = tk.Button(frame, text="View Medical Records", command=self.view_records)
-        self.refresh_btn = tk.Button(frame, text="Refresh Patients", command=self.update_patientsList)
+        self.records_btn_d = tk.Button(frame, text="View Medical Records", command=self.controller.view_records)
+        self.refresh_btn_d = tk.Button(frame, text="Refresh Patients", command=self.controller.update_patientsList)
 
-        label.pack()
-        self.patient_list.pack()
-        self.records_btn.pack()
-        self.refresh_btn.pack()
+        label.pack(pady=10)
+        self.patient_list.pack(pady=5)
+        self.records_btn_d.pack(pady=5)
+        self.refresh_btn_d.pack(pady=5)
         self.show_patients = True
 
-    def update_patientsList(self):
-        self.patient_list.delete(0, tk.END)
-        patients = self.controller.model.get_docs_patients()
-        for patient in patients:
-            self.patient_list.insert(tk.END, patient)
-        self.show_patients = True
+    def create_recordsPage(self, frame):
+        label = tk.Label(frame, text="My Records")
+        self.records_list = tk.Listbox(frame, selectmode=tk.SINGLE, width=50, height=20)
+        self.records_btn_p = tk.Button(frame, text="View Medical Records", command=self.controller.view_records)
+        self.refresh_btn_p = tk.Button(frame, text="Refresh Records", command=self.controller.update_recordsList)
 
-    def view_records(self):
-        selection = self.patient_list.curselection()
+        label.pack(pady=5)
+        self.records_list.pack(pady=5)
+        self.records_btn_p.pack(pady=5)
+        self.refresh_btn_p.pack(pady=5)
+
+    def create_prescriptionPage(self, frame):
+        label = tk.Label(frame, text="My Prescriptions")
+        self.prescrip_list = tk.Listbox(frame, selectmode=tk.SINGLE, width=50, height=20)
+        self.prescrip_btn = tk.Button(frame, text="View Prescription", command=self.view_prescrip)
+        
+        label.pack(pady=10)
+        self.prescrip_list.pack(pady=5)
+        self.prescrip_btn.pack(pady=5)
+
+        if self.controller.model.auth == "doctor":
+            # allow doctor to delete and add prescriptions
+            self.deleteprescrip_btn = tk.Button(frame, text="Delete Prescription", command=self.delete_prescrip)
+            self.add_presc_btn = tk.Button(frame, text="Add New Prescription", command=self.create_prescrip_window)
+            
+            self.deleteprescrip_btn.pack(pady=5)
+            self.add_presc_btn.pack(pady=5)
+
+
+    def view_prescrip(self):
+        selection = self.prescrip_list.curselection()
         if selection:
-            if self.show_patients:
-                pat = self.patient_list.get(selection)
-                self.patient_list.delete(0, tk.END)
-                records = self.controller.model.get_patient_records(pat)
-                for record in records:
-                    self.patient_list.insert(tk.END, record)
-                self.show_patients = False
-            else:
-                record = self.patient_list.get(selection[0])
-                messagebox.showinfo(f"Record {record[0]} - {record[4]}", f"{record[3]}")
+            prescrip = self.prescrip_list.get(selection)
+            prescrip = self.controller.model.get_prescription()
+            messagebox.showinfo(f"Prescription", f"name: {prescrip}")
         else:
-            messagebox.showwarning("No Patient/Record Selected", "Please select a patient or record to view details.")
+            messagebox.showwarning("No Prescription Selected", "Please select a prescription to view details.")
+
+    def update_prescripList(self):
+        self.prescrip_list.delete(0, tk.END)
+        prescrips = self.controller.model.get_prescriptions()
+        for prescrip in prescrips:
+            self.prescrip_list.insert(tk.END, prescrip)
+
+    def create_prescrip(self):
+        pass
+
+    def delete_prescrip(self):
+        pass
+
+    def create_prescrip_window(self):
+        prescription_window = tk.Toplevel(self.controller.root)
+        prescription_window.title("Add New Prescription")
+        prescription_window.geometry("250x300")
+
+        name_label = tk.Label(prescription_window, text="Patient Name:")
+        name_entry = tk.Entry(prescription_window)
+
+        med_label = tk.Label(prescription_window, text="Medication:")
+        med_entry = tk.Entry(prescription_window)
+
+        dosage_label = tk.Label(prescription_window, text="Dosage:")
+        dosage_entry = tk.Entry(prescription_window)
+
+        expiry_label = tk.Label(prescription_window, text="Expiration:")
+        expiry_entry = tk.Entry(prescription_window)
+
+        submit_button = tk.Button(
+            prescription_window, text="Submit",
+            command=lambda: self.submit_prescription(name_entry.get(), med_entry.get(), dosage_entry.get(), prescription_window)
+        )
+
+        name_label.pack(padx=5, pady=5)
+        name_entry.pack(padx=5, pady=5)
+        med_label.pack(padx=5, pady=5)
+        med_entry.pack(padx=5, pady=5)
+        dosage_label.pack(padx=5, pady=5)
+        dosage_entry.pack(padx=5, pady=5)
+        expiry_label.pack(padx=5, pady=5)
+        expiry_entry.pack(padx=5, pady=5)
+        submit_button.pack(padx=5, pady=5)
+
+    def submit_prescription(self, name, medication, dosage, window):
+        if not name or not medication or not dosage:
+            messagebox.showwarning("Incomplete Information", "Please fill out all fields.")
+            return
+
+        self.controller.model.add_prescription(name, medication, dosage)
+        window.destroy()
+        self.update_prescripList()
+
 
 class SignupDoctor:
+    """Separate page for doctor registration"""
     def __init__(self, root, controller, model: Model):
         self.root = root
         self.controller = controller
@@ -312,6 +367,7 @@ class SignupDoctor:
         View(self.root, self.controller, self.model)
 
 class SignupPatient:
+    """Separate page for patient registration"""
     def __init__(self, root, controller, model: Model):
         self.root = root
         self.controller = controller
