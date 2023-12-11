@@ -43,3 +43,6 @@ class Model:
     def get_patient_records(self, pat):
         result = self.server.get_patient_records(pat)
         return result
+
+    def updatePatient(self):
+        pass
