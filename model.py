@@ -61,10 +61,11 @@ class Model:
     def get_prescriptions(self):
         return ["p"]
 
-    def add_prescription(patient, medication, dosage):
-        first = patient.split(" ")[0]
-        last = patient.split(" ")[1]
+    def add_prescription(self, pat, medication, dosage, expiry):
+        first = (pat.split(" "))[0]
+        last = (pat.split(" "))[1]
         print(first, last)
+        # check if patient exists, then create prescription
 
     def get_doc(self, id):
         doc = self.server.get_doctor(id)

@@ -277,7 +277,7 @@ class View:
 
         submit_button = tk.Button(
             prescription_window, text="Submit",
-            command=lambda: self.submit_prescription(name_entry.get(), med_entry.get(), dosage_entry.get(), prescription_window)
+            command=lambda: self.submit_prescription(name_entry.get(), med_entry.get(), dosage_entry.get(), expiry_entry.get(), prescription_window)
         )
 
         name_label.pack(padx=5, pady=5)
@@ -290,12 +290,12 @@ class View:
         expiry_entry.pack(padx=5, pady=5)
         submit_button.pack(padx=5, pady=5)
 
-    def submit_prescription(self, name, medication, dosage, window):
+    def submit_prescription(self, name, medication, dosage, expiry, window):
         if not name or not medication or not dosage:
             messagebox.showwarning("Incomplete Information", "Please fill out all fields.")
             return
 
-        self.controller.model.add_prescription(name, medication, dosage)
+        self.controller.model.add_prescription(name, medication, dosage, expiry)
         window.destroy()
         self.update_prescripList()
 
