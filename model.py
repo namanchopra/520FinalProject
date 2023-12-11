@@ -45,4 +45,9 @@ class Model:
         return result
 
     def updatePatient(self):
-        pass
+        print(self.user)
+        # TODO update server with new user info
+
+    def updateDoctor(self):
+        print(self.user)
+        # TODO update server with new user info

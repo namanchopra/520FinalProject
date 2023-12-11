@@ -1,7 +1,5 @@
-import tkinter as tk
 from view import View
 from model import Model
-from PIL import ImageTk, Image
 from tkinter import messagebox
 
 class Controller:
@@ -36,7 +34,21 @@ class Controller:
         else:
             messagebox.showwarning("Missing Required Fields", "Please enter all fields before updating")
 
-    def create_patient(self,email, pw, first, last, age):
+    def updateDoctor(self, email, first, last, spec):
+        if email != "" and first != "" and last != "" and spec != "":
+
+            self.model.user = (self.model.user[0], 
+                            email, 
+                            self.model.user[2],
+                            first,
+                            last,
+                            spec)
+            self.model.updateDoctor()
+            messagebox.showinfo("Update Successful!", "Your updated information has been saved")
+        else:
+            messagebox.showwarning("Missing Required Fields", "Please enter all fields before updating")
+
+    def create_patient(self, email, pw, first, last, age):
         self.model.new_patient()
 
     def create_doctor(self, email, pw, first, last, spec):

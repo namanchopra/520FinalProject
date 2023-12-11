@@ -107,6 +107,8 @@ class View:
     def create_tab(self, tab_name, frame):
         if tab_name == "Patient Portal":
             self.create_patientPortal(frame)
+        elif tab_name == "Doctor Portal":
+            self.create_doctorPortal(frame)
 
     def create_patientPortal(self, frame):
         self.icon = ImageTk.PhotoImage(Image.open("./img/user.png").resize((100,100)))
@@ -160,8 +162,53 @@ class View:
         insurance = self.insurance_pat.get()
         self.controller.updatePatient(email, first, last, age, insurance)
 
+    def create_doctorPortal(self, frame):
+        self.icon = ImageTk.PhotoImage(Image.open("./img/doc.png").resize((100,100)))
+        icon_label = tk.Label(frame, image=self.icon, bg=self.color)
+        
+        first_label = tk.Label(frame, text=f"First Name:")
+        self.first_doc = tk.Entry(frame)
+        self.first_doc.insert(0, f"{self.model.user[3]}")
+
+        last_label = tk.Label(frame, text=f"Last Name:")
+        self.last_doc = tk.Entry(frame)
+        self.last_doc.insert(0, f"{self.model.user[4]}")
+
+        email_label = tk.Label(frame, text=f"Email:")
+        self.email_doc = tk.Entry(frame)
+        self.email_doc.insert(0, f"{self.model.user[1]}")
+
+        spec_label = tk.Label(frame, text=f"Specialty:")
+        self.spec_doc = tk.Entry(frame)
+        self.spec_doc.insert(0, f"{self.model.user[5]}")
+
+        update_btn = tk.Button(frame, text="Update My Info", command=self.updateDoctor)
+        
+        icon_label.grid(row=0, column=0, columnspan=2, pady=5)
+        first_label.grid(row=1, column=0, padx=5, pady=5, sticky='e')
+        self.first_doc.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+        last_label.grid(row=2, column=0, padx=5, pady=5, sticky='e')
+        self.last_doc.grid(row=2, column=1, padx=5, pady=5, sticky='w')
+        email_label.grid(row=3, column=0, padx=5, pady=5, sticky='e')
+        self.email_doc.grid(row=3, column=1, padx=5, pady=5, sticky='w')
+        spec_label.grid(row=4, column=0, padx=5, pady=5, sticky='e')
+        self.spec_doc.grid(row=4, column=1, padx=5, pady=5, sticky='w')
+        update_btn.grid(row=6, column=0, columnspan=2, pady=5)
+
+        for i in range(2):
+            frame.columnconfigure(i, weight=1)
+        for i in range(7):
+            frame.rowconfigure(i, weight=1)
+
+    def updateDoctor(self):
+        email = self.email_doc.get()
+        first = self.first_doc.get()
+        last = self.last_doc.get()
+        spec = self.spec_doc.get()
+        self.controller.updateDoctor(email, first, last, spec)
+
 class SignupDoctor:
-    def __init__(self, root, controller, model):
+    def __init__(self, root, controller, model: Model):
         self.root = root
         self.controller = controller
         self.model = model
@@ -217,7 +264,7 @@ class SignupDoctor:
             return
 
         self.controller.create_doctor(email, pw, first, last, spec)
-        messagebox.showinfo("Sign Up", "User created successfully!")
+        messagebox.showinfo("Signed Up", "User created successfully!")
         self.show_login()
 
     def show_login(self):
@@ -225,7 +272,7 @@ class SignupDoctor:
         View(self.root, self.controller, self.model)
 
 class SignupPatient:
-    def __init__(self, root, controller, model):
+    def __init__(self, root, controller, model: Model):
         self.root = root
         self.controller = controller
         self.model = model
@@ -288,7 +335,7 @@ class SignupPatient:
             return
 
         self.controller.create_patient(email, pw, first, last, age, insurance)
-        messagebox.showinfo("Sign Up", "User created successfully!")
+        messagebox.showinfo("Signed Up", "User created successfully!")
         self.show_login()
 
     def show_login(self):
