@@ -1,24 +1,37 @@
 from server import Server
 
 class Model:
-    """Describes the Model class which interacts with the Server to update the View"""
     def __init__(self):
         self.server = Server()
+        self.user_authenticated = False
         self.user_tables = ["doctor", "patient", "administrator"]
-        self.user = None
+        self.user_tabs = {"doctor": ["Doctor Portal", "Patients", "Prescriptions"], "patient": ["Patient Portal", "Records", "Prescriptions"], "administrator": ["Prescriptions"]}
+        self.all_tabs = ["Patient Portal", "Doctor Portal", "Patients", "Doctors", "Records", "Prescriptions", "System Logs"]
         self.auth = None
-        self.table = []
+        self.user = None
 
     def login(self, email, pw):
-        """Check if entered email and password pair are values in any user tables in the database"""
-        result = None
         for table in self.user_tables:
             result = self.server.authenticate(table, email, pw)
             if result is not None:
                 self.user = result
                 self.auth = table
+                self.user_authenticated = True
                 break
-        return self.auth # return the user's authorization, or None if no user match
+        tabs = self.authorize_tabs()
+        return tabs
+
+    def authorize_tabs(self):
+        tabs = []
+        if self.user_authenticated and self.auth is not None:
+            tabs = self.user_tabs[self.auth]
+        return tabs
+
+    def new_doctor(self):
+        print("create new doctor")
+
+    def new_patient(self):
+        print("create new patient")
 
     def get_docs_patients(self):
         pats = self.server.docs_patients(self.user[0])

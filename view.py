@@ -1,149 +1,237 @@
 import tkinter as tk
-from tkinter import Toplevel
+import tkinter.ttk as ttk
+from PIL import ImageTk, Image
+from model import Model
 from tkinter import messagebox
-from PIL import Image, ImageTk
 
 class View:
-    def __init__(self, controller):
-        self.root = tk.Tk()
+    def __init__(self, root: tk.Tk, controller, model: Model):
+        self.root = root
         self.controller = controller
-        self.login_page = Login(self, self.controller)
-        self.admin_page = Admin(self, self.controller)
-        self.patient_page = Patient(self, self.controller)
-        self.doctor_page = Doctor(self, self.controller)
-        self.current_page = self.login_page
+        self.model = model
+        self.root.geometry("800x600")
+        self.root.title("Patient Tracker App")
 
-    def show_login(self):
-        self.hide_all()
-        self.login_page.show()
-        self.current_page = self.login_page
-
-    def show_admin(self):
-        self.admin_page.show()
-        self.current_page = self.admin_page
-
-    def show_patient(self):
-        self.patient_page.show()
-        self.current_page = self.patient_page
-
-    def show_doctor(self):
-        self.doctor_page.show()
-        self.doctor_page.update_content()
-        self.current_page = self.doctor_page
-
-    def hide_all(self):
-        for child in self.root.winfo_children():
-            if isinstance(child, Toplevel):
-                child.withdraw()
-
-
-class Page(tk.Toplevel):
-    """Abstract view class which describes a page that is shown to the user"""
-    def __init__(self, view: View, title: str):
-        super().__init__(view.root)
-        self.view = view
-        self.title(title)
-        self.geometry("500x500")
-
-    def show(self):
-        self.view.hide_all()
-        self.deiconify()
-
-    def hide(self):
-        self.withdraw()
-
-    def close(self):
-        self.destroy()
-
-    def report_err(self, title: str, msg: str):
-        messagebox.showerror(title, msg)
-
-class Login(Page):
-    """Child class of Page, describes the login screen shown to the user upon opening the application"""
-    def __init__(self, view: View, controller):
-        super().__init__(view, "Login")
-        self.controller = controller
-        self.title_label = tk.Label(self, text="Patient Tracker Login")
+        self.login_frame = tk.Frame(self.root, bg="#d9d9d9")
+        self.login_frame.pack(expand=True, fill="both")
+        
         self.logo_img = ImageTk.PhotoImage(Image.open("./img/logo.png").resize((100,100)))
-        self.logo_label = tk.Label(self, image=self.logo_img)
-        self.email_label = tk.Label(self, text="Email:")
-        self.pw_label = tk.Label(self, text="Password:")
-        self.email_entry = tk.Entry(self)
-        self.pw_entry = tk.Entry(self, show='*')
-        self.login_btn = tk.Button(self, text="Login", command=self.login)
+        self.logo_label = tk.Label(self.login_frame, image=self.logo_img, bg="#d9d9d9")
+        self.logo_label.pack(pady=15)
 
-        self.title_label.pack(padx=5, pady=15)
-        self.logo_label.pack(padx=5, pady=5)
-        self.email_label.pack(padx=5, pady=5)
-        self.email_entry.pack(padx=5, pady=5)
-        self.pw_label.pack(padx=5, pady=5)
-        self.pw_entry.pack(padx=5, pady=5)
-        self.login_btn.pack(padx=5, pady=5)
-    
+        self.login_label = tk.Label(self.login_frame, text="Please Login")
+        self.login_label.pack(pady=15)
+        
+        self.email_label = tk.Label(self.login_frame, text="Email:")
+        self.email_label.pack(pady=5)
+
+        self.email_entry = tk.Entry(self.login_frame, width=20)
+        self.email_entry.pack(pady=5)
+
+        self.pw_label = tk.Label(self.login_frame, text="Password:")
+        self.pw_label.pack(pady=5)
+
+        self.pw_entry = tk.Entry(self.login_frame, show="*", width=20)
+        self.pw_entry.pack(pady=5)
+
+        self.login_btn = tk.Button(self.login_frame, text="Login", command=self.login)
+        self.login_btn.pack(pady=10)
+
+        self.signup_p_btn = tk.Button(self.login_frame, text="Sign Up as Patient", command=self.signup_patient)
+        self.signup_p_btn.pack(pady=5)
+
+        self.signup_d_btn = tk.Button(self.login_frame, text="Sign Up as Doctor", command=self.signup_doctor)
+        self.signup_d_btn.pack(pady=5)
+
+        self.tabControl = ttk.Notebook(self.root)
+        self.tab_frames = {}
+        self.widgets_created = {}
+
     def login(self):
         email = self.email_entry.get()
         pw = self.pw_entry.get()
-        self.controller.login(email, pw)
+        authorized_tabs = self.controller.login(email, pw)
 
-class Doctor(Page):
-    def __init__(self, view: View, controller):
-        super().__init__(view, "Doctor Portal")
-        self.controller = controller
-        self.view = view
-        self.label = tk.Label(self, text="List of Patients:")
-        self.patient_list = tk.Listbox(self, selectmode=tk.SINGLE, width=50, height=20)
-        self.records_btn = tk.Button(self, text="View Medical Records", command=self.view_records)
-        self.refresh_btn = tk.Button(self, text="Refresh Patients", command=self.update_content)
-
-        self.label.pack()
-        self.patient_list.pack()
-        self.records_btn.pack()
-        self.refresh_btn.pack()
-        self.show_patients = True
-
-    def update_content(self):
-        self.patient_list.delete(0, tk.END)
-        patients = self.controller.model.get_docs_patients()
-        for patient in patients:
-            self.patient_list.insert(tk.END, patient)
-        self.show_patients = True
-
-    def view_records(self):
-        selection = self.patient_list.curselection()
-        if selection:
-            if self.show_patients:
-                pat = self.patient_list.get(selection)
-                self.patient_list.delete(0, tk.END)
-                records = self.controller.model.get_patient_records(pat)
-                for record in records:
-                    self.patient_list.insert(tk.END, record)
-                self.show_patients = False
-            else:
-                record = self.patient_list.get(selection[0])
-                messagebox.showinfo(f"Record {record[0]} - {record[4]}", f"{record[3]}")
+        if authorized_tabs:
+            self.login_frame.destroy()
+            self.show_tabs(authorized_tabs)
         else:
-            messagebox.showwarning("No Patient Selected", "Please select a patient to view their medical records.")
+            messagebox.showwarning("Invalid Credentials", "Please try to log in again with you email and password.")
 
-        # selection = self.patient_list.curselection()
-        # if selection:
-        #     if self.show_patients:
-        #         pat = self.patient_list.get(selection)
-        #         self.patient_list.delete(0, tk.END)
-        #         records = self.controller.model.get_patient_records(pat)
-        #         for record in records:
-        #             desc = (record[3][:15] + "...") if len(record[3]) > 18 else record[3]
-        #             self.patient_list.insert(tk.END, f"{record[4]}: {desc}")
-        #         self.show_patients = False
-        #     else:
-        #         record = self.patient_list.get(selection)
-        #         messagebox.showinfo(f"Record {record[0]} - {record[4]}", f"{record[3]}")
-        # else:
-        #     messagebox.showwarning("No Patient Selected", "Please select a patient to view their medical records.")
+    # def logout(self):
+    #     for frame in self.tab_frames.values():
+    #         frame.destroy()
+    #     self.controller.logout()
 
-class Patient(Page):
-    def __init__(self, view, controller):
-        super().__init__(view, "Patient Portal")
+    def signup_patient(self):
+        self.login_frame.destroy()
+        SignupPatient(self.root, self.controller, self.model)
 
-class Admin(Page):
-    def __init__(self, view, controller):
-        super().__init__(view, "Admin Portal")
+    def signup_doctor(self):
+        self.login_frame.destroy()
+        SignupDoctor(self.root, self.controller, self.model)
+
+    def show_tabs(self, authorized_tabs):
+        for tab_name in authorized_tabs:
+            frame = tk.Frame(self.tabControl)
+            self.controller.create_tab(tab_name, frame)
+            self.tabControl.add(frame, text=tab_name)
+            self.tab_frames[tab_name] = frame
+
+        self.tabControl.pack(expand=1, fill="both")
+        self.tabControl.bind("<<NotebookTabChanged>>", self.on_tab_change)
+
+        self.content_label = tk.Label(self.root, text="")
+        self.content_label.pack(pady=10)
+        # self.logout_btn = tk.Button(self.root, text="Logout", command=self.logout)
+        # self.logout_btn.pack(pady=10, padx=10)
+
+        self.widgets_created.update({tab_name: True for tab_name in authorized_tabs})
+
+    def on_tab_change(self, event):
+        current_tab = self.tabControl.select()
+        tab_name = self.tabControl.tab(current_tab, "text")
+        content = self.controller.get_tab_content(tab_name)
+        self.content_label.config(text=content)
+
+        # if not self.widgets_created[tab_name]:
+        #     print("tabbed")
+        #     frame = self.tab_frames[tab_name]
+        #     self.controller.create_tab(tab_name, frame)
+        #     self.widgets_created[tab_name] = True
+
+
+class SignupDoctor:
+    def __init__(self, root, controller, model):
+        self.root = root
+        self.controller = controller
+        self.model = model
+
+        self.signup_frame = ttk.Frame(self.root)
+        self.signup_frame.pack(expand=True, fill="both")
+
+        self.first_label = tk.Label(self.signup_frame, text="First Name:")
+        self.first_label.pack(pady=5)
+
+        self.first_entry = tk.Entry(self.signup_frame, width=20)
+        self.first_entry.pack(pady=5)
+
+        self.last_label = tk.Label(self.signup_frame, text="Last Name:")
+        self.last_label.pack(pady=5)
+
+        self.last_entry = tk.Entry(self.signup_frame, width=20)
+        self.last_entry.pack(pady=5)
+
+        self.spec_label = tk.Label(self.signup_frame, text="Specialization:")
+        self.spec_label.pack(pady=5)
+
+        self.spec_entry = tk.Entry(self.signup_frame, width=20)
+        self.spec_entry.pack(pady=5)
+
+        self.email_label = tk.Label(self.signup_frame, text="Email:")
+        self.email_label.pack(pady=5)
+
+        self.email_entry = tk.Entry(self.signup_frame, width=20)
+        self.email_entry.pack(pady=5)
+
+        self.pw_label = tk.Label(self.signup_frame, text="Password:")
+        self.pw_label.pack(pady=5)
+
+        self.pw_entry = tk.Entry(self.signup_frame, show="*", width=20)
+        self.pw_entry.pack(pady=5)
+
+        self.signup_btn = tk.Button(self.signup_frame, text="Sign Up", command=self.signup)
+        self.signup_btn.pack(pady=10)
+
+        self.back_btn = tk.Button(self.signup_frame, text="Back", command=self.show_login)
+        self.back_btn.pack(pady=5)
+
+    def signup(self):
+        email = self.email_entry.get()
+        pw = self.pw_entry.get()
+        first = self.first_entry.get()
+        last = self.last_entry.get()
+        spec = self.spec_entry.get()
+
+        if not email or not pw or not first or not last or not spec:
+            messagebox.showwarning("Missing Required Fields", "Please fill out all fields.")
+            return
+
+        self.controller.create_doctor(email, pw, first, last, spec)
+        messagebox.showinfo("Sign Up", "User created successfully!")
+        self.show_login()
+
+    def show_login(self):
+        self.signup_frame.destroy()
+        View(self.root, self.controller, self.model)
+
+class SignupPatient:
+    def __init__(self, root, controller, model):
+        self.root = root
+        self.controller = controller
+        self.model = model
+
+        self.signup_frame = ttk.Frame(self.root)
+        self.signup_frame.pack(expand=True, fill="both")
+
+        self.first_label = tk.Label(self.signup_frame, text="First Name:")
+        self.first_label.pack(pady=5)
+
+        self.first_entry = tk.Entry(self.signup_frame, width=20)
+        self.first_entry.pack(pady=5)
+
+        self.last_label = tk.Label(self.signup_frame, text="Last Name:")
+        self.last_label.pack(pady=5)
+
+        self.last_entry = tk.Entry(self.signup_frame, width=20)
+        self.last_entry.pack(pady=5)
+
+        self.age_label = tk.Label(self.signup_frame, text="Age:")
+        self.age_label.pack(pady=5)
+
+        self.age_entry = tk.Entry(self.signup_frame, width=20)
+        self.age_entry.pack(pady=5)
+
+        self.insurance_label = tk.Label(self.signup_frame, text="Insurance (optional):")
+        self.insurance_label.pack(pady=5)
+
+        self.insurance_entry = tk.Entry(self.signup_frame, width=20)
+        self.insurance_entry.pack(pady=5)
+
+        self.email_label = tk.Label(self.signup_frame, text="Email:")
+        self.email_label.pack(pady=5)
+
+        self.email_entry = tk.Entry(self.signup_frame, width=20)
+        self.email_entry.pack(pady=5)
+
+        self.pw_label = tk.Label(self.signup_frame, text="Password:")
+        self.pw_label.pack(pady=5)
+
+        self.pw_entry = tk.Entry(self.signup_frame, show="*", width=20)
+        self.pw_entry.pack(pady=5)
+
+        self.signup_btn = tk.Button(self.signup_frame, text="Sign Up", command=self.signup)
+        self.signup_btn.pack(pady=10)
+
+        self.back_btn = tk.Button(self.signup_frame, text="Back", command=self.show_login)
+        self.back_btn.pack(pady=5)
+
+    def signup(self):
+        email = self.email_entry.get()
+        pw = self.pw_entry.get()
+        first = self.first_entry.get()
+        last = self.last_entry.get()
+        age = self.age_entry.get()
+        insurance = self.insurance_entry.get()
+
+        if not email or not pw or not first or not last or not age:
+            messagebox.showwarning("Missing Required Fields", "Please fill out all fields.")
+            return
+
+        self.controller.create_patient(email, pw, first, last, age, insurance)
+        messagebox.showinfo("Sign Up", "User created successfully!")
+        self.show_login()
+
+    def show_login(self):
+        self.signup_frame.destroy()
+        View(self.root, self.controller, self.model)
