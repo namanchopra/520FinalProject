@@ -1,6 +1,7 @@
 from view import View
 from model import Model
 from tkinter import messagebox
+import tkinter as tk
 
 class Controller:
     def __init__(self, root, model:Model):
@@ -54,6 +55,8 @@ class Controller:
     def create_doctor(self, email, pw, first, last, spec):
         self.model.new_doctor()
 
-    # def logout(self):
-    #     self.model = Model()
-    #     self.view = View(self.root, self, self.model)
+    def logout(self):
+        self.root = tk.Tk()
+        self.root.configure(bg="#4682b5")
+        self.model = Model()
+        self.view = View(self.root, self, self.model)

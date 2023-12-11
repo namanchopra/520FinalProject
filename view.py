@@ -49,7 +49,7 @@ class View:
         
         self.tab_descrip = {"Patient Portal": "Welcome to your patient portal",
                             "Doctor Portal" : "Welcome to your doctor portal",
-                            "Patient" : "View your patients",
+                            "Patients" : "View your patients",
                             "Doctors" : "View all doctors",
                             "Records" : "View your medical records",
                             "Prescriptions" : "View your prescription details",
@@ -67,10 +67,11 @@ class View:
         else:
             messagebox.showwarning("Invalid Credentials", "Please try to log in again with you email and password.")
 
-    # def logout(self):
-    #     for frame in self.tab_frames.values():
-    #         frame.destroy()
-    #     self.controller.logout()
+    def logout(self):
+        for frame in self.tab_frames.values():
+            frame.destroy()
+        self.root.destroy()
+        self.controller.logout()
 
     def signup_patient(self):
         self.login_frame.destroy()
@@ -92,8 +93,8 @@ class View:
 
         self.content_label = tk.Label(self.root, text="")
         self.content_label.pack(pady=10)
-        # self.logout_btn = tk.Button(self.root, text="Logout", command=self.logout)
-        # self.logout_btn.pack(pady=10, padx=10)
+        self.logout_btn = tk.Button(self.root, text="Logout", command=self.logout)
+        self.logout_btn.pack(pady=10, padx=10)
 
     def on_tab_change(self, event):
         current_tab = self.tabControl.select()
@@ -109,6 +110,9 @@ class View:
             self.create_patientPortal(frame)
         elif tab_name == "Doctor Portal":
             self.create_doctorPortal(frame)
+        elif tab_name == "Patients":
+            self.create_patientPage(frame)
+            self.update_patientsList()
 
     def create_patientPortal(self, frame):
         self.icon = ImageTk.PhotoImage(Image.open("./img/user.png").resize((100,100)))
@@ -207,13 +211,49 @@ class View:
         spec = self.spec_doc.get()
         self.controller.updateDoctor(email, first, last, spec)
 
+    def create_patientPage(self, frame):
+        label = tk.Label(frame, text="List of Patients:")
+        self.patient_list = tk.Listbox(frame, selectmode=tk.SINGLE, width=50, height=20)
+        self.records_btn = tk.Button(frame, text="View Medical Records", command=self.view_records)
+        self.refresh_btn = tk.Button(frame, text="Refresh Patients", command=self.update_patientsList)
+
+        label.pack()
+        self.patient_list.pack()
+        self.records_btn.pack()
+        self.refresh_btn.pack()
+        self.show_patients = True
+
+    def update_patientsList(self):
+        self.patient_list.delete(0, tk.END)
+        patients = self.controller.model.get_docs_patients()
+        for patient in patients:
+            self.patient_list.insert(tk.END, patient)
+        self.show_patients = True
+
+    def view_records(self):
+        selection = self.patient_list.curselection()
+        if selection:
+            if self.show_patients:
+                pat = self.patient_list.get(selection)
+                self.patient_list.delete(0, tk.END)
+                records = self.controller.model.get_patient_records(pat)
+                for record in records:
+                    self.patient_list.insert(tk.END, record)
+                self.show_patients = False
+            else:
+                record = self.patient_list.get(selection[0])
+                messagebox.showinfo(f"Record {record[0]} - {record[4]}", f"{record[3]}")
+        else:
+            messagebox.showwarning("No Patient/Record Selected", "Please select a patient or record to view details.")
+
 class SignupDoctor:
     def __init__(self, root, controller, model: Model):
         self.root = root
         self.controller = controller
         self.model = model
 
-        self.signup_frame = ttk.Frame(self.root)
+        self.color = "#d9d9d9"
+        self.signup_frame = tk.Frame(self.root, bg=self.color)
         self.signup_frame.pack(expand=True, fill="both")
 
         self.first_label = tk.Label(self.signup_frame, text="First Name:")
@@ -277,7 +317,8 @@ class SignupPatient:
         self.controller = controller
         self.model = model
 
-        self.signup_frame = ttk.Frame(self.root)
+        self.color = "#d9d9d9"
+        self.signup_frame = tk.Frame(self.root, bg=self.color)
         self.signup_frame.pack(expand=True, fill="both")
 
         self.first_label = tk.Label(self.signup_frame, text="First Name:")

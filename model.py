@@ -37,7 +37,7 @@ class Model:
         pats = self.server.docs_patients(self.user[0])
         result = []
         for pat in pats:
-            print(self.server.get_patient(pat[0]))
+            result.append(self.server.get_patient(pat[0]))
         return result
     
     def get_patient_records(self, pat):
