@@ -178,7 +178,19 @@ class Controller:
             messagebox.showwarning("No Doctor Selected", "Please select a doctor to view details.")
 
     def search_docs(self):
-        pass
+        if self.view.search_doc.get() != "":
+            option = self.view.filter_options.index(self.view.selected_filter.get())
+            if option == 0:
+                pass # search by name
+            elif option == 1:
+                pass # search by insurance
+            elif option == 2:
+                pass # search by specialization
+            else:
+                return False
+        else:
+            self.update_docsList()
+            
 
     def create_patient(self, email, pw, first, last, age, insurance):
         insurance = self.model.server.get_insurance_by_name(insurance)

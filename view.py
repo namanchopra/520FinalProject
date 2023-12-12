@@ -245,10 +245,11 @@ class View:
         self.search_doc = tk.Entry(frame)
         search_doc_btn = tk.Button(frame, text="Search", command=self.controller.search_docs)
 
-        self.selected_filter = "Name"
-        filter_options = ["Name", "Insurance", "Specialization"]
-        self.filter_drop = ttk.Combobox(frame, values=filter_options, textvariable=self.selected_filter, state="readonly")
-        self.filter_drop.current(filter_options.index(self.selected_filter))
+        self.selected_filter = tk.StringVar()
+        self.selected_filter.set("Name")
+        self.filter_options = ["Name", "Insurance", "Specialization"]
+        self.filter_drop = ttk.Combobox(frame, values=self.filter_options, textvariable=self.selected_filter, state="readonly")
+        self.filter_drop.current(self.filter_options.index(self.selected_filter.get()))
 
         self.docs_list = tk.Listbox(frame, selectmode=tk.SINGLE, width=50, height=20)
         self.viewdoc_btn = tk.Button(frame, text="View Doctor Info", command=self.controller.view_docs)
