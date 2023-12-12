@@ -90,6 +90,41 @@ class ServerTest(unittest.TestCase):
         actual = self.server.get_patient_by_name(first, last)
         self.assertEqual(actual, None)
 
+    def test_add_patient(self):
+        email = "test@test.gov"
+        pw = "pw"
+        first = "test"
+        last = "patient"
+        age = 100
+        insurance = 6
+        actual = self.server.add_patient(email, pw, first, last, age, insurance)
+        self.assertEqual(actual, True)
+
+    def test_delete_patient(self):
+        id = self.server.get_patient_by_name("test", "patient")[0]
+        actual = self.server.delete_patient(id)
+        self.assertEqual(actual, True)
+
+    def test_get_insurance(self):
+        id = 6
+        actual = self.server.get_insurance(id)[0]
+        self.assertEqual(actual, id)
+
+    def test_get_insurance_by_name(self):
+        provider = "USAA"
+        actual = self.server.get_insurance_by_name(provider)[1]
+        self.assertEqual(actual, provider)
+
+    def test_update_patient(self):
+        id, email, pw, first, last, age, insurance = self.server.get_patient(7)
+        actual = self.server.update_patient(id, email, pw, first, last, age, insurance)
+        self.assertEqual(actual, True)
+
+    def test_update_doctor(self):
+        id, email, pw, first, last, spec = self.server.get_doctor(1)
+        actual = self.server.update_doctor(id, email, pw, first, last, spec)
+        self.assertEqual(actual, True)
+
 
 class ModelTest(unittest.TestCase):
 

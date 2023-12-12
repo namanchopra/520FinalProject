@@ -50,6 +50,7 @@ class Server:
         else:
             return None
 
+    # READ
     def authenticate(self, table, email, pw):
         stmnt = "SELECT * FROM " + table + " WHERE email = %s AND pw = %s"
         val = (email, pw)
@@ -136,12 +137,55 @@ class Server:
         result = self._query(stmnt, val)
         return self.get_single(result)
 
+    def get_insurance(self, id):
+        stmnt = "SELECT * FROM insurance WHERE id = %s"
+        val = (id,)
+        return self.get_single(self._query(stmnt, val))
+
+    def get_insurance_by_name(self, name):
+        stmnt = "SELECT * FROM insurance WHERE provider_name = %s"
+        val = (name,)
+        return self.get_single(self._query(stmnt, val))
+
+    # CREATE
     def add_prescription(self, pat, doc, prescrip, dosage, expiry):
         stmnt = "INSERT INTO prescription (pat, doc, prescrip, dosage, expiry) VALUES (%s, %s, %s, %s, %s)"
         val = (pat, doc, prescrip, dosage, expiry)
         return self._execute(stmnt, val)
 
+    def add_patient(self, email, pw, first, last, age, insured):
+        stmnt = "INSERT INTO patient (email, pw, firstname, lastname, age, insured) VALUES (%s, %s, %s, %s, %s, %s)"
+        val = (email, pw, first, last, age, insured)
+        return self._execute(stmnt, val)
+
+    def add_doctor(self, email, pw, first, last, spec):
+        stmnt = "INSERT INTO doctor (email, pw, firstname, lastname, spec) VALUES (%s, %s, %s, %s, %s)"
+        val = (email, pw, first, last, spec)
+        return self._execute(stmnt, val)
+
+    # DELETE
     def delete_prescription(self, id):
         stmnt = "DELETE FROM prescription WHERE id = %s"
         val = (id,)
+        return self._execute(stmnt, val)
+
+    def delete_patient(self, id):
+        stmnt = "DELETE FROM patient WHERE id = %s"
+        val = (id,)
+        return self._execute(stmnt, val)
+
+    def delete_doctor(self, id):
+        stmnt = "DELETE FROM doctor WHERE id = %s"
+        val = (id,)
+        return self._execute(stmnt, val)
+
+    # UPDATE
+    def update_patient(self, id, email, pw, first, last, age, insured):
+        stmnt = "UPDATE patient SET email=%s, pw=%s, firstname=%s, lastname=%s, age=%s, insured=%s WHERE id=%s"
+        val = (email, pw, first, last, age, insured, id)
+        return self._execute(stmnt, val)
+
+    def update_doctor(self, id, email, pw, first, last, spec):
+        stmnt = "UPDATE doctor SET email=%s, pw=%s, firstname=%s, lastname=%s, spec=%s WHERE id=%s"
+        val = (email, pw, first, last, spec, id)
         return self._execute(stmnt, val)
