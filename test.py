@@ -147,6 +147,12 @@ class ModelTest(unittest.TestCase):
         expected = 8
         self.assertEqual(actual, expected)
 
+    def test_id_to_provider(self):
+        id = 6
+        expected = "USAA"
+        actual = self.model.id_to_provider(id)
+        self.assertEqual(actual, expected)
+
         
 if __name__ == "__main__":
     unittest.main()

@@ -133,7 +133,7 @@ class View:
 
         insurance_label = tk.Label(frame, text=f"Insurance:")
         self.insurance_pat = tk.Entry(frame)
-        self.insurance_pat.insert(0, f"{self.model.user[6]}")
+        self.insurance_pat.insert(0, f"{self.model.id_to_provider(self.model.user[6])}")
 
         update_btn = tk.Button(frame, text="Update My Info", command=self.controller.update_patient)
         
@@ -228,7 +228,7 @@ class View:
         self.prescrip_list.pack(pady=5)
         self.prescrip_btn.pack(pady=5)
 
-        if self.controller.model.auth == "doctor":
+        if self.model.auth == "doctor":
             # allow doctor to delete and add prescriptions
             self.deleteprescrip_btn = tk.Button(frame, text="Delete Prescription", command=self.delete_prescrip)
             self.add_presc_btn = tk.Button(frame, text="Add New Prescription", command=self.create_prescrip_window)
@@ -279,7 +279,7 @@ class View:
             messagebox.showwarning("Incomplete Information", "Please fill out all fields.")
             return
 
-        if self.controller.model.add_prescription(name, medication, dosage, expiry):
+        if self.model.add_prescription(name, medication, dosage, expiry):
             window.destroy()
             self.controller.update_prescripList()
         else:

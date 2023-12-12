@@ -32,8 +32,6 @@ class Controller:
         if email != "" and first != "" and last != "" and age != "" and insurance != "":
             try:
                 age = int(age)
-                insurance = int(insurance)
-                # TODO instead, check if insurance exists by name
             except ValueError:
                 messagebox.showerror("Invalid Input", "Age must be an integer")
                 return
@@ -44,8 +42,10 @@ class Controller:
                             last,
                             age,
                             insurance)
-            self.model.update_patient()
-            messagebox.showinfo("Update Successful!", "Your updated information has been saved")
+            if self.model.update_patient():
+                messagebox.showinfo("Update Successful!", "Your updated information has been saved")
+            else:
+                messagebox.showerror("Error Updating Info", "There was an unexpected error when attempting to save your information")
         else:
             messagebox.showwarning("Missing Required Fields", "Please enter all fields before updating")
 
@@ -72,7 +72,7 @@ class Controller:
         self.view.patient_list.delete(0, tk.END)
         patients = self.model.get_docs_patients()
         for patient in patients:
-            info = f"{patient[0]} - First: {patient[3]}, Last: {patient[4]}, Age: {patient[5]}, Insurance: {patient[6]}"
+            info = f"{patient[0]} - First: {patient[3]}, Last: {patient[4]}, Age: {patient[5]}, Insurance: {self.model.id_to_provider(patient[6])}"
             self.view.patient_list.insert(tk.END, info)
         self.show_patients = True
 

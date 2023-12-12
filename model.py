@@ -49,12 +49,19 @@ class Model:
         return result
 
     def update_patient(self):
-        print(self.user)
-        # TODO update server with new user info
+        # print(self.user)
+        id, email, pw, first, last, age, insurance = self.user
+        insurance = self.server.get_insurance_by_name(insurance)[0]
+        print(id, email, pw, first, last, age, insurance)
+        if insurance is None:
+            print("bad insurance", insurance)
+            return False
+        return self.server.update_patient(id, email, pw, first, last, age, insurance)
 
     def update_doctor(self):
         print(self.user)
-        # TODO update server with new user info
+        id, email, pw, first, last, spec = self.user
+        return self.server.update_doctor(id, email, pw, first, last, spec)
 
     def get_prescription(self, id):
         return self.server.get_prescrip(id)
@@ -101,3 +108,7 @@ class Model:
     def log(self, event):
         """logs an action to the database"""
         pass
+
+    def id_to_provider(self, id):
+        insurance = self.server.get_insurance(id)
+        return insurance[1]
