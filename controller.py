@@ -93,7 +93,7 @@ class Controller:
             selection = self.view.patient_list.curselection()
             if selection:
                 if self.show_patients:
-                    pat = self.view.patient_list.get(selection)
+                    pat = self.view.patient_list.get(selection).split(" ")[0]
                     self.view.patient_list.delete(0, tk.END)
                     records = self.model.get_patient_records(pat)
                     for record in records:
@@ -102,7 +102,7 @@ class Controller:
                         self.view.patient_list.insert(tk.END, info)
                     self.show_patients = False
                 else:
-                    record = self.view.patient_list.get(selection[0])
+                    record = self.view.patient_list.get(selection).split(" ")[0]
                     record = self.model.get_record(record)
                     doctor = self.model.get_doc_name(record[2])
                     info = f"{record[0]} - Created {record[4]} by Dr. {doctor}: {record[3]}"
@@ -113,7 +113,7 @@ class Controller:
         elif self.model.auth == "patient":
             selection = self.view.records_list.curselection()
             if selection:
-                record = self.view.records_list.get(selection[0])
+                record = self.view.records_list.get(selection).split(" ")[0]
                 record = self.model.get_record(record)
                 doctor = self.model.get_doc_name(record[2])
                 info = f"{record[0]} - Created {record[4]} by Dr. {doctor}: {record[3]}"
@@ -131,8 +131,8 @@ class Controller:
     def view_prescrip(self):
         selection = self.view.prescrip_list.curselection()
         if selection:
-            prescrip = self.view.prescrip_list.get(selection)
-            prescrip = self.model.get_prescription(prescrip[0])
+            prescrip = self.view.prescrip_list.get(selection).split(" ")[0]
+            prescrip = self.model.get_prescription(prescrip)
             doc = self.model.get_doc_name(prescrip[2])
             pat = self.model.get_pat_name(prescrip[1])
             messagebox.showinfo(f"Prescription", f"Medication: {prescrip[3]}, Dosage: {prescrip[4]}, Expiration: {prescrip[5]}, Prescribed by: Dr. {doc}, for: {pat}")
@@ -142,10 +142,11 @@ class Controller:
     def delete_prescrip(self):
         selection = self.view.prescrip_list.curselection()
         if selection:
-            prescrip = self.view.prescrip_list.get(selection)
-            prescrip = self.model.get_prescription(prescrip[0])
-            doc = self.model.get_doc_name(prescrip[2])
-            pat = self.model.get_pat_name(prescrip[1])
+            prescrip = self.view.prescrip_list.get(selection).split(" ")[0]
+            if self.model.server.delete_prescription(prescrip):
+                self.update_prescripList()
+            else:
+                messagebox.showerror("Deletion Failed", "An unknown error occurred while attempting to delete the selected item.")
         else:
             messagebox.showwarning("No Prescription Selected", "Please select a prescription to remove it.")
 
@@ -159,6 +160,25 @@ class Controller:
             self.update_prescripList()
         else:
             messagebox.showerror("Add Prescription Error", "There was an issue with creating the prescription")
+
+    def update_docsList(self):
+        self.view.docs_list.delete(0, tk.END)
+        docs = self.model.get_all_doctors()
+        for doc in docs:
+            info = f"{doc[0]} - {doc[3]}, {doc[4]}, {doc[5]}"
+            self.view.docs_list.insert(tk.END, info)
+
+    def view_docs(self):
+        selection = self.view.docs_list.curselection()
+        if selection:
+            doc = self.view.docs_list.get(selection).split(" ")[0]
+            doc = self.model.server.get_doctor(doc)
+            messagebox.showinfo(f"Doctor {doc[3]} {doc[4]}", f"First name: {doc[3]}, Last name: {doc[4]}, Specialty: {doc[5]}, Email: {doc[1]}")
+        else:
+            messagebox.showwarning("No Doctor Selected", "Please select a doctor to view details.")
+
+    def search_docs(self):
+        pass
 
     def create_patient(self, email, pw, first, last, age, insurance):
         insurance = self.model.server.get_insurance_by_name(insurance)

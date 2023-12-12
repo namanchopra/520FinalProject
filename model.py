@@ -7,8 +7,8 @@ class Model:
         self.server = Server()
         self.user_authenticated = False
         self.user_tables = ["doctor", "patient", "administrator"]
-        self.user_tabs = {"doctor": ["Doctor Portal", "Patients", "Prescriptions"], "patient": ["Patient Portal", "Records", "Prescriptions"], "administrator": ["Prescriptions"]}
-        self.all_tabs = ["Patient Portal", "Doctor Portal", "Patients", "Doctors", "Records", "Prescriptions", "System Logs"]
+        self.user_tabs = {"doctor": ["Doctor Portal", "Patients", "Prescriptions"], "patient": ["Patient Portal", "Records", "Prescriptions", "Doctors"], "administrator": ["Users", "System Logs"]}
+        self.all_tabs = ["Patient Portal", "Doctor Portal", "Patients", "Doctors", "Records", "Prescriptions", "System Logs", "Users"]
         self.auth = None
         self.user = None
 
@@ -65,11 +65,18 @@ class Model:
             prescrips = self.server.get_prescrips_doc(self.user[0])
         elif self.auth == "patient":
             prescrips = self.server.get_prescrips_pat(self.user[0])
-        elif self.auth == "administrator":
-            prescrips = self.server.get_all_prescrips()
+        # elif self.auth == "administrator":
+        #     prescrips = self.server.get_all_prescrips()
         else:
             prescrips = []
         return prescrips
+
+    def get_all_doctors(self):
+        return self.server.get_all_doctors()
+
+    def filter_docs(self, search, col):
+        if col == "specialization":
+            pass
 
     def add_prescription(self, pat, med, dosage, expiry):
         first = (pat.split(" "))[0]

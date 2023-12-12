@@ -9,7 +9,7 @@ class View:
         self.root = root
         self.controller = controller
         self.model = model
-        self.root.geometry("800x600")
+        self.root.geometry("800x700")
         self.root.title("Patient Tracker")
         self.color = "#d9d9d9"
 
@@ -53,7 +53,8 @@ class View:
                             "Doctors" : "View all doctors",
                             "Records" : "View your medical records",
                             "Prescriptions" : "View and manage prescriptions",
-                            "System Logs" : "System Logging info"
+                            "System Logs" : "System Logging info",
+                            "Users" : "View all users"
                             }
 
     def logout(self):
@@ -108,6 +109,9 @@ class View:
         elif tab_name == "Prescriptions":
             self.create_prescriptionPage(frame)
             self.controller.update_prescripList()
+        elif tab_name == "Doctors":
+            self.create_docsPage(frame)
+            self.controller.update_docsList()
 
     def create_patientPortal(self, frame):
         label = tk.Label(frame, text="My Info")
@@ -214,7 +218,7 @@ class View:
         self.records_btn_p = tk.Button(frame, text="View Medical Records", command=self.controller.view_records)
         self.refresh_btn_p = tk.Button(frame, text="Refresh Records", command=self.controller.update_recordsList)
 
-        label.pack(pady=5)
+        label.pack(pady=10)
         self.records_list.pack(pady=5)
         self.records_btn_p.pack(pady=5)
         self.refresh_btn_p.pack(pady=5)
@@ -235,6 +239,33 @@ class View:
             
             self.deleteprescrip_btn.pack(pady=5)
             self.add_presc_btn.pack(pady=5)
+    
+    def create_docsPage(self, frame):
+        label = tk.Label(frame, text="All Doctors")
+        self.search_doc = tk.Entry(frame)
+        search_doc_btn = tk.Button(frame, text="Search", command=self.controller.search_docs)
+
+        self.selected_filter = "Name"
+        filter_options = ["Name", "Insurance", "Specialization"]
+        self.filter_drop = ttk.Combobox(frame, values=filter_options, textvariable=self.selected_filter, state="readonly")
+        self.filter_drop.current(filter_options.index(self.selected_filter))
+
+        self.docs_list = tk.Listbox(frame, selectmode=tk.SINGLE, width=50, height=20)
+        self.viewdoc_btn = tk.Button(frame, text="View Doctor Info", command=self.controller.view_docs)
+        self.refreshdoc_btn = tk.Button(frame, text="Refresh All", command=self.controller.update_docsList)
+
+        label.grid(row=0, column=1, padx=10, pady=10)
+        self.filter_drop.grid(row=1, column=0, padx=5, pady=5, sticky='e')
+        self.search_doc.grid(row=1, column=1, padx=5, pady=5)
+        search_doc_btn.grid(row=1, column=2, padx=5, pady=5, sticky='w')
+        self.docs_list.grid(row=2, column=0, columnspan=3, pady=5)
+        self.viewdoc_btn.grid(row=3, column=0, pady=5, sticky='e')
+        self.refreshdoc_btn.grid(row=3, column=2, pady=5, sticky='w')
+
+        for i in range(3):
+            frame.columnconfigure(i, weight=1)
+        for i in range(4):
+            frame.rowconfigure(i, weight=1)
 
     def create_prescrip_window(self):
         prescription_window = tk.Toplevel(self.controller.root)
