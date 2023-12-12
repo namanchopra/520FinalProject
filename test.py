@@ -61,6 +61,13 @@ class ServerTest(unittest.TestCase):
         expected = id
         self.assertEqual(actual, expected)
 
+    def test_get_patient_by_name(self):
+        first = "joe"
+        last = "joe"
+        actual = self.server.get_patient_by_name(first, last)[0]
+        expected = 7
+        self.assertEqual(actual, expected)
+
 
 class ModelTest(unittest.TestCase):
 

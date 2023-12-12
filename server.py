@@ -11,14 +11,14 @@ class Server:
         )
         self.cursor = self.db.cursor()
 
-    def _query(self, stmnt, vals=None):
+    def _query(self, stmnt, val=None):
         """uses a statement and values to query the database"""
         try:
             if not self.db.is_connected():
                 self.db.reconnect()
 
             cursor = self.db.cursor()
-            cursor.execute(stmnt, vals)
+            cursor.execute(stmnt, val)
             result = cursor.fetchall()
             cursor.close()
             return result
@@ -35,8 +35,8 @@ class Server:
 
     def authenticate(self, table, email, pw):
         stmnt = "SELECT * FROM " + table + " WHERE email = %s AND pw = %s"
-        vals = (email, pw)
-        result = self._query(stmnt, vals)
+        val = (email, pw)
+        result = self._query(stmnt, val)
         return self.get_single(result)
 
     def get_all_patients(self):
@@ -106,3 +106,9 @@ class Server:
         val = (doc,)
         result = self._query(stmnt, val)
         return result
+
+    def get_patient_by_name(self, first_name, last_name):
+        stmnt = "SELECT * FROM patient WHERE firstname = %s AND lastname = %s"
+        val = (first_name, last_name)
+        result = self._query(stmnt, val)
+        return self.get_single(result)

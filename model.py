@@ -79,6 +79,10 @@ class Model:
         doc = self.server.get_doctor(id)
         return f"{doc[3]} {doc[4]}"
 
+    def get_pat(self, id):
+        pat = self.server.get_patient(id)
+        return f"{pat[3]} {pat[4]}"
+
     def log(self, event):
         """logs an action to the database"""
         pass
