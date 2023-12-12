@@ -80,7 +80,7 @@ class Controller:
         self.view.records_list.delete(0, tk.END)
         records = self.model.get_patient_records(self.model.user)
         for record in records:
-            doctor = self.model.get_doc(record[2])
+            doctor = self.model.get_doc_name(record[2])
             info = f"{record[0]} - {record[4]} Dr. {doctor}: {record[3]}" 
             self.view.records_list.insert(tk.END, info)
 
@@ -93,21 +93,27 @@ class Controller:
                     self.view.patient_list.delete(0, tk.END)
                     records = self.model.get_patient_records(pat)
                     for record in records:
-                        doctor = self.model.get_doc(record[2])
-                        info = f"{record[0]} - Created {record[4]} by Dr. {doctor}: {record[3]}"
+                        doctor = self.model.get_doc_name(record[2])
+                        info = f"{record[0]} - {record[4]} Dr. {doctor}: {record[3]}"
                         self.view.patient_list.insert(tk.END, info)
                     self.show_patients = False
                 else:
                     record = self.view.patient_list.get(selection[0])
-                    self.model.log("Record View")
-                    messagebox.showinfo(f"Record", record)
+                    record = self.model.get_record(record)
+                    doctor = self.model.get_doc_name(record[2])
+                    info = f"{record[0]} - Created {record[4]} by Dr. {doctor}: {record[3]}"
+                    self.model.log("Record View", )
+                    messagebox.showinfo(f"Record", info)
             else:
                 messagebox.showwarning("No Patient/Record Selected", "Please select a patient or record to view details.")
         elif self.model.auth == "patient":
             selection = self.view.records_list.curselection()
             if selection:
-                record = self.view.records_list.get(selection)
-                messagebox.showinfo(f"Record", record)
+                record = self.view.records_list.get(selection[0])
+                record = self.model.get_record(record)
+                doctor = self.model.get_doc_name(record[2])
+                info = f"{record[0]} - Created {record[4]} by Dr. {doctor}: {record[3]}"
+                messagebox.showinfo(f"Record", info)
             else:
                 messagebox.showwarning("No Record Selected", "Please select a record to view details.")
 
@@ -123,8 +129,8 @@ class Controller:
         if selection:
             prescrip = self.view.prescrip_list.get(selection)
             prescrip = self.model.get_prescription(prescrip[0])
-            doc = self.model.get_doc(prescrip[2])
-            pat = self.model.get_pat(prescrip[1])
+            doc = self.model.get_doc_name(prescrip[2])
+            pat = self.model.get_pat_name(prescrip[1])
             messagebox.showinfo(f"Prescription", f"Medication: {prescrip[3]}, Dosage: {prescrip[4]}, Expiration: {prescrip[5]}, Prescribed by: Dr. {doc}, for: {pat}")
         else:
             messagebox.showwarning("No Prescription Selected", "Please select a prescription to view details.")

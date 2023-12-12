@@ -137,7 +137,7 @@ class View:
 
         update_btn = tk.Button(frame, text="Update My Info", command=self.controller.updatePatient)
         
-        label.grid(row=0, column=0, columnspan=2, pady=10)
+        label.grid(row=0, column=0, columnspan=2, pady=5)
         icon_label.grid(row=1, column=0, columnspan=2, pady=5)
         first_label.grid(row=2, column=0, padx=5, pady=5, sticky='e')
         self.first_pat.grid(row=2, column=1, padx=5, pady=5, sticky='w')
@@ -179,7 +179,7 @@ class View:
 
         update_btn = tk.Button(frame, text="Update My Info", command=self.controller.updateDoctor)
         
-        label.grid(row=0, column=0, columnspan=2, pady=10)
+        label.grid(row=0, column=0, columnspan=2, pady=5)
         icon_label.grid(row=1, column=0, columnspan=2, pady=5)
         first_label.grid(row=2, column=0, padx=5, pady=5, sticky='e')
         self.first_doc.grid(row=2, column=1, padx=5, pady=5, sticky='w')

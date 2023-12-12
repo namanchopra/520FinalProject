@@ -75,13 +75,17 @@ class Model:
         print(first, last)
         # check if patient exists, then create prescription
 
-    def get_doc(self, id):
+    def get_doc_name(self, id):
         doc = self.server.get_doctor(id)
         return f"{doc[3]} {doc[4]}"
 
-    def get_pat(self, id):
+    def get_pat_name(self, id):
         pat = self.server.get_patient(id)
         return f"{pat[3]} {pat[4]}"
+
+    def get_record(self, id):
+        record = self.server.get_record(id)
+        return record
 
     def log(self, event):
         """logs an action to the database"""
