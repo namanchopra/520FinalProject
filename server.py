@@ -82,20 +82,27 @@ class Server:
         result = self._query(stmnt, val)
         return result
 
-        # stmnt = "SELECT pat FROM patientdoc WHERE doc = %s"
-        # val = (doc,)
-        # ids = self._query(stmnt, val)
-        # result = []
-        # for id in ids:
-        #     result.append((self.get_patient(id))[0])
-        # return result
-
     def get_patient_records(self, id):
         stmnt = "SELECT * FROM record WHERE pat = %s"
-        print(id)
         val = (id[0],)
         result = self._query(stmnt, val)
         return result
 
+    def get_prescrip(self, id):
+        stmnt = "SELECT * FROM prescription WHERE id = %s"
+        val = (id,)
+        result = self._query(stmnt, val)
+        result = self.get_single(result)
+        return result
 
+    def get_prescrips_pat(self, pat):
+        stmnt = "SELECT * FROM prescription WHERE pat = %s"
+        val = (pat,)
+        result = self._query(stmnt, val)
+        return result
     
+    def get_prescrips_doc(self, doc):
+        stmnt = "SELECT * FROM prescription WHERE doc = %s"
+        val = (doc,)
+        result = self._query(stmnt, val)
+        return result

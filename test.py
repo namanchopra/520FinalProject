@@ -40,6 +40,28 @@ class ServerTest(unittest.TestCase):
         expected = (8, 'bill@gmail.com', 'pw', 'bill', 'bill', 49, 6)
         self.assertEqual(actual, expected)
 
+    def test_get_prescrip(self):
+        id = 1
+        prescrip = self.server.get_prescrip(id)
+        actual = prescrip[0]
+        expected = id
+        self.assertEqual(actual, expected)
+
+    def test_get_prescrips_pat(self):
+        id = 7
+        prescrips = self.server.get_prescrips_pat(id)
+        actual = prescrips[0][1]
+        expected = id
+        self.assertEqual(actual, expected)
+
+    def test_get_prescrips_doc(self):
+        id = 2
+        prescrips = self.server.get_prescrips_doc(id)
+        actual = prescrips[0][2]
+        expected = id
+        self.assertEqual(actual, expected)
+
+
 class ModelTest(unittest.TestCase):
 
     def setUp(self):
@@ -48,7 +70,8 @@ class ModelTest(unittest.TestCase):
     def test_login(self):
         email = "joey@gmail.com"
         pw = "pw"
-        actual = self.model.login(email, pw)
+        self.model.login(email, pw)
+        actual = self.model.auth
         expected = "doctor"
         self.assertEqual(actual, expected)
 
@@ -56,8 +79,9 @@ class ModelTest(unittest.TestCase):
         email = "joey@gmail.com"
         pw = "pw"
         self.model.login(email, pw)
-        actual = self.model.get_docs_patients()
-        print(actual)
+        actual = self.model.get_docs_patients()[0][0]
+        expected = 8
+        self.assertEqual(actual, expected)
 
         
 if __name__ == "__main__":
