@@ -230,17 +230,11 @@ class View:
 
         if self.model.auth == "doctor":
             # allow doctor to delete and add prescriptions
-            self.deleteprescrip_btn = tk.Button(frame, text="Delete Prescription", command=self.delete_prescrip)
+            self.deleteprescrip_btn = tk.Button(frame, text="Delete Prescription", command=self.controller.delete_prescrip)
             self.add_presc_btn = tk.Button(frame, text="Add New Prescription", command=self.create_prescrip_window)
             
             self.deleteprescrip_btn.pack(pady=5)
             self.add_presc_btn.pack(pady=5)
-
-    def create_prescrip(self):
-        pass
-
-    def delete_prescrip(self):
-        pass
 
     def create_prescrip_window(self):
         prescription_window = tk.Toplevel(self.controller.root)
@@ -261,7 +255,7 @@ class View:
 
         submit_button = tk.Button(
             prescription_window, text="Submit",
-            command=lambda: self.submit_prescription(name_entry.get(), med_entry.get(), dosage_entry.get(), expiry_entry.get(), prescription_window)
+            command=lambda: self.controller.submit_prescription(name_entry.get(), med_entry.get(), dosage_entry.get(), expiry_entry.get(), prescription_window)
         )
 
         name_label.pack(padx=5, pady=5)
@@ -273,17 +267,6 @@ class View:
         expiry_label.pack(padx=5, pady=5)
         expiry_entry.pack(padx=5, pady=5)
         submit_button.pack(padx=5, pady=5)
-
-    def submit_prescription(self, name, medication, dosage, expiry, window):
-        if not name or not medication or not dosage:
-            messagebox.showwarning("Incomplete Information", "Please fill out all fields.")
-            return
-
-        if self.model.add_prescription(name, medication, dosage, expiry):
-            window.destroy()
-            self.controller.update_prescripList()
-        else:
-            messagebox.showerror("Add Prescription Error", "There was an issue with creating the prescription")
 
 
 class SignupDoctor:
@@ -383,7 +366,7 @@ class SignupPatient:
         self.age_entry = tk.Entry(self.signup_frame, width=20)
         self.age_entry.pack(pady=5)
 
-        self.insurance_label = tk.Label(self.signup_frame, text="Insurance (optional):")
+        self.insurance_label = tk.Label(self.signup_frame, text="Insurance:")
         self.insurance_label.pack(pady=5)
 
         self.insurance_entry = tk.Entry(self.signup_frame, width=20)
@@ -415,7 +398,7 @@ class SignupPatient:
         age = self.age_entry.get()
         insurance = self.insurance_entry.get()
 
-        if not email or not pw or not first or not last or not age:
+        if not email or not pw or not first or not last or not age or not insurance:
             messagebox.showwarning("Missing Required Fields", "Please fill out all fields.")
             return
 
@@ -427,4 +410,5 @@ class SignupPatient:
 
     def show_login(self):
         self.signup_frame.destroy()
-        View(self.root, self.controller, self.model)
+        self.root.destroy()
+        self.controller.logout()

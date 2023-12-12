@@ -31,11 +31,11 @@ class Model:
             tabs = self.user_tabs[self.auth]
         return tabs
 
-    def new_doctor(self):
-        print("create new doctor")
+    def new_doctor(self, email, pw, first, last, spec):
+        return self.server.add_doctor(email, pw, first, last, spec)
 
-    def new_patient(self):
-        print("create new patient")
+    def new_patient(self, email, pw, first, last, age, insurance):
+        return self.server.add_patient(email, pw, first, last, age, insurance)
 
     def get_docs_patients(self):
         pats = self.server.docs_patients(self.user[0])
@@ -49,13 +49,7 @@ class Model:
         return result
 
     def update_patient(self):
-        # print(self.user)
         id, email, pw, first, last, age, insurance = self.user
-        insurance = self.server.get_insurance_by_name(insurance)[0]
-        print(id, email, pw, first, last, age, insurance)
-        if insurance is None:
-            print("bad insurance", insurance)
-            return False
         return self.server.update_patient(id, email, pw, first, last, age, insurance)
 
     def update_doctor(self):

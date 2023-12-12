@@ -29,6 +29,10 @@ class Controller:
         last = self.view.last_pat.get()
         age = self.view.age_pat.get()
         insurance = self.view.insurance_pat.get()
+        insurance = self.model.server.get_insurance_by_name(insurance)[0]
+        if insurance is None:
+            messagebox.showwarning("Unknown Insurance", "We don't have the insurance provider you entered in our database")
+            return False
         if email != "" and first != "" and last != "" and age != "" and insurance != "":
             try:
                 age = int(age)
@@ -135,11 +139,37 @@ class Controller:
         else:
             messagebox.showwarning("No Prescription Selected", "Please select a prescription to view details.")
 
-    def create_patient(self, email, pw, first, last, age):
-        self.model.new_patient()
+    def delete_prescrip(self):
+        selection = self.view.prescrip_list.curselection()
+        if selection:
+            prescrip = self.view.prescrip_list.get(selection)
+            prescrip = self.model.get_prescription(prescrip[0])
+            doc = self.model.get_doc_name(prescrip[2])
+            pat = self.model.get_pat_name(prescrip[1])
+        else:
+            messagebox.showwarning("No Prescription Selected", "Please select a prescription to remove it.")
+
+    def submit_prescription(self, name, med, dosage, expiry, window):
+        if not name or not med or not dosage:
+            messagebox.showwarning("Incomplete Information", "Please fill out all fields.")
+            return
+
+        if self.model.add_prescription(name, med, dosage, expiry):
+            window.destroy()
+            self.update_prescripList()
+        else:
+            messagebox.showerror("Add Prescription Error", "There was an issue with creating the prescription")
+
+    def create_patient(self, email, pw, first, last, age, insurance):
+        insurance = self.model.server.get_insurance_by_name(insurance)
+        if insurance is not None:
+            return self.model.new_patient(email, pw, first, last, age, insurance[0])
+        else:
+            messagebox.showerror("Unknown Insurance", "We don't have the insurance provider you entered in our database")
+            return False
 
     def create_doctor(self, email, pw, first, last, spec):
-        self.model.new_doctor()
+        return self.model.new_doctor(email, pw, first, last, spec)
 
     def logout(self):
         """reinstantiate the tkinter root, model and view"""
