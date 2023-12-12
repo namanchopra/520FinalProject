@@ -55,11 +55,19 @@ class Model:
         print(self.user)
         # TODO update server with new user info
 
-    def get_prescription(self):
-        return "prescrip"
+    def get_prescription(self, id):
+        return self.server.get_prescrip(id)
 
     def get_prescriptions(self):
-        return ["p"]
+        if self.auth == "doctor":
+            prescrips = self.server.get_prescrips_doc(self.user[0])
+        elif self.auth == "patient":
+            prescrips = self.server.get_prescrips_pat(self.user[0])
+        elif self.auth == "administrator":
+            prescrips = self.server.get_all_prescrips()
+        else:
+            prescrips = []
+        return prescrips
 
     def add_prescription(self, pat, medication, dosage, expiry):
         first = (pat.split(" "))[0]

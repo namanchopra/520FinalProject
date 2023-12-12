@@ -73,7 +73,6 @@ class Controller:
         for patient in patients:
             print(patient)
             info = f"{patient[0]} - First: {patient[3]}, Last: {patient[4]}, Age: {patient[5]}, Insurance: {patient[6]}"
-            # info = info[:38] + "..." if len(info) > 40 else info 
             self.view.patient_list.insert(tk.END, info)
         self.show_patients = True
 
@@ -82,7 +81,7 @@ class Controller:
         records = self.model.get_patient_records(self.model.user)
         for record in records:
             doctor = self.model.get_doc(record[2])
-            info = f"{record[0]} - Created {record[4]} by Dr. {doctor}: {record[3]}" 
+            info = f"{record[0]} - {record[4]} Dr. {doctor}: {record[3]}" 
             self.view.records_list.insert(tk.END, info)
 
     def view_records(self):
@@ -116,14 +115,17 @@ class Controller:
         self.view.prescrip_list.delete(0, tk.END)
         prescrips = self.model.get_prescriptions()
         for prescrip in prescrips:
-            self.view.prescrip_list.insert(tk.END, prescrip)
+            info = f"{prescrip[0]} - {prescrip[3]}, {prescrip[4]}, {prescrip[5]}"
+            self.view.prescrip_list.insert(tk.END, info)
 
     def view_prescrip(self):
         selection = self.view.prescrip_list.curselection()
         if selection:
             prescrip = self.view.prescrip_list.get(selection)
-            prescrip = self.model.get_prescription()
-            messagebox.showinfo(f"Prescription", f"name: {prescrip}")
+            prescrip = self.model.get_prescription(prescrip[0])
+            doc = self.model.get_doc(prescrip[2])
+            pat = self.model.get_pat(prescrip[1])
+            messagebox.showinfo(f"Prescription", f"Medication: {prescrip[3]}, Dosage: {prescrip[4]}, Expiration: {prescrip[5]}, Prescribed by: Dr. {doc}, for: {pat}")
         else:
             messagebox.showwarning("No Prescription Selected", "Please select a prescription to view details.")
 
