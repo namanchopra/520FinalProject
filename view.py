@@ -335,7 +335,8 @@ class SignupDoctor:
 
     def show_login(self):
         self.signup_frame.destroy()
-        View(self.root, self.controller, self.model)
+        self.root.destroy()
+        self.controller.logout()
 
 class SignupPatient:
     """Separate page for patient registration"""
