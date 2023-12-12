@@ -1,3 +1,4 @@
+import datetime
 import unittest
 from server import Server
 from model import Model
@@ -67,6 +68,27 @@ class ServerTest(unittest.TestCase):
         actual = self.server.get_patient_by_name(first, last)[0]
         expected = 7
         self.assertEqual(actual, expected)
+
+    def test_add_prescription(self):
+        pat = 7
+        doc = 2
+        prescrip = "example"
+        dosage = "100mg"
+        expiry = datetime.date(2024, 5, 1)
+        actual = self.server.add_prescription(pat, doc, prescrip, dosage, expiry)
+        self.assertTrue(actual, True)
+
+    def test_delete_prescription(self):
+        pat = 7
+        prescrip = self.server.get_prescrips_pat(pat)[-1][0]
+        actual = self.server.delete_prescription(prescrip)
+        self.assertEqual(actual, True)
+
+    def test_bad_patient(self):
+        first = "nonexistent"
+        last = "patient"
+        actual = self.server.get_patient_by_name(first, last)
+        self.assertEqual(actual, None)
 
 
 class ModelTest(unittest.TestCase):
