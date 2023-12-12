@@ -27,6 +27,23 @@ class Server:
             print(f"Error: {e}")
             return None
 
+    def _execute(self, stmnt, val=None):
+        """uses a statement and values to execute on the database without fetching return values"""
+        try:
+            if not self.db.is_connected():
+                self.db.reconnect()
+
+            cursor = self.db.cursor()
+            cursor.execute(stmnt, val)
+            self.db.commit()
+            cursor.close()
+            return True
+
+        except mysql.connector.Error as e:
+            print(f"Error: {e}")
+            self.db.rollback()
+            return False
+
     def get_single(self, result):
         if len(result) == 1:
             return result[0]
@@ -118,3 +135,13 @@ class Server:
         val = (first_name, last_name)
         result = self._query(stmnt, val)
         return self.get_single(result)
+
+    def add_prescription(self, pat, doc, prescrip, dosage, expiry):
+        stmnt = "INSERT INTO prescription (pat, doc, prescrip, dosage, expiry) VALUES (%s, %s, %s, %s, %s)"
+        val = (pat, doc, prescrip, dosage, expiry)
+        return self._execute(stmnt, val)
+
+    def delete_prescription(self, id):
+        stmnt = "DELETE FROM prescription WHERE id = %s"
+        val = (id,)
+        return self._execute(stmnt, val)

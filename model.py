@@ -1,3 +1,4 @@
+import datetime
 from server import Server
 
 class Model:
@@ -47,11 +48,11 @@ class Model:
         result = self.server.get_patient_records(pat)
         return result
 
-    def updatePatient(self):
+    def update_patient(self):
         print(self.user)
         # TODO update server with new user info
 
-    def updateDoctor(self):
+    def update_doctor(self):
         print(self.user)
         # TODO update server with new user info
 
@@ -69,11 +70,21 @@ class Model:
             prescrips = []
         return prescrips
 
-    def add_prescription(self, pat, medication, dosage, expiry):
+    def add_prescription(self, pat, med, dosage, expiry):
         first = (pat.split(" "))[0]
         last = (pat.split(" "))[1]
-        print(first, last)
         # check if patient exists, then create prescription
+        patient = self.server.get_patient_by_name(first, last)[0]
+        expiry = expiry.split("/")
+        if len(expiry) != 3:
+            return False
+        try:
+            month, day, year = map(int, expiry)
+            expiry = datetime.date(year, month, day)
+        except ValueError:
+            return False
+
+        return self.server.add_prescription(patient, self.user[0], med, dosage, expiry)
 
     def get_doc_name(self, id):
         doc = self.server.get_doctor(id)

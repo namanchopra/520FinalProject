@@ -22,7 +22,7 @@ class Controller:
         else:
             messagebox.showwarning("Invalid Credentials", "Please try to log in again with you email and password.")
 
-    def updatePatient(self):
+    def update_patient(self):
         """used to update the model when a patient changes their information"""
         email = self.view.email_pat.get()
         first = self.view.first_pat.get()
@@ -33,6 +33,7 @@ class Controller:
             try:
                 age = int(age)
                 insurance = int(insurance)
+                # TODO instead, check if insurance exists by name
             except ValueError:
                 messagebox.showerror("Invalid Input", "Age must be an integer")
                 return
@@ -43,12 +44,12 @@ class Controller:
                             last,
                             age,
                             insurance)
-            self.model.updatePatient()
+            self.model.update_patient()
             messagebox.showinfo("Update Successful!", "Your updated information has been saved")
         else:
             messagebox.showwarning("Missing Required Fields", "Please enter all fields before updating")
 
-    def updateDoctor(self):
+    def update_doctor(self):
         """used to update the model when a doctor changes their information"""
         email = self.view.email_doc.get()
         first = self.view.first_doc.get()
@@ -62,7 +63,7 @@ class Controller:
                             first,
                             last,
                             spec)
-            self.model.updateDoctor()
+            self.model.update_doctor()
             messagebox.showinfo("Update Successful!", "Your updated information has been saved")
         else:
             messagebox.showwarning("Missing Required Fields", "Please enter all fields before updating")
@@ -71,7 +72,6 @@ class Controller:
         self.view.patient_list.delete(0, tk.END)
         patients = self.model.get_docs_patients()
         for patient in patients:
-            print(patient)
             info = f"{patient[0]} - First: {patient[3]}, Last: {patient[4]}, Age: {patient[5]}, Insurance: {patient[6]}"
             self.view.patient_list.insert(tk.END, info)
         self.show_patients = True
@@ -134,7 +134,6 @@ class Controller:
             messagebox.showinfo(f"Prescription", f"Medication: {prescrip[3]}, Dosage: {prescrip[4]}, Expiration: {prescrip[5]}, Prescribed by: Dr. {doc}, for: {pat}")
         else:
             messagebox.showwarning("No Prescription Selected", "Please select a prescription to view details.")
-
 
     def create_patient(self, email, pw, first, last, age):
         self.model.new_patient()

@@ -135,7 +135,7 @@ class View:
         self.insurance_pat = tk.Entry(frame)
         self.insurance_pat.insert(0, f"{self.model.user[6]}")
 
-        update_btn = tk.Button(frame, text="Update My Info", command=self.controller.updatePatient)
+        update_btn = tk.Button(frame, text="Update My Info", command=self.controller.update_patient)
         
         label.grid(row=0, column=0, columnspan=2, pady=5)
         icon_label.grid(row=1, column=0, columnspan=2, pady=5)
@@ -177,7 +177,7 @@ class View:
         self.spec_doc = tk.Entry(frame)
         self.spec_doc.insert(0, f"{self.model.user[5]}")
 
-        update_btn = tk.Button(frame, text="Update My Info", command=self.controller.updateDoctor)
+        update_btn = tk.Button(frame, text="Update My Info", command=self.controller.update_doctor)
         
         label.grid(row=0, column=0, columnspan=2, pady=5)
         icon_label.grid(row=1, column=0, columnspan=2, pady=5)
@@ -256,7 +256,7 @@ class View:
         dosage_label = tk.Label(prescription_window, text="Dosage:")
         dosage_entry = tk.Entry(prescription_window)
 
-        expiry_label = tk.Label(prescription_window, text="Expiration:")
+        expiry_label = tk.Label(prescription_window, text="Expiration (mm/dd/yyyy):")
         expiry_entry = tk.Entry(prescription_window)
 
         submit_button = tk.Button(
@@ -279,9 +279,11 @@ class View:
             messagebox.showwarning("Incomplete Information", "Please fill out all fields.")
             return
 
-        self.controller.model.add_prescription(name, medication, dosage, expiry)
-        window.destroy()
-        self.controller.update_prescripList()
+        if self.controller.model.add_prescription(name, medication, dosage, expiry):
+            window.destroy()
+            self.controller.update_prescripList()
+        else:
+            messagebox.showerror("Add Prescription Error", "There was an issue with creating the prescription")
 
 
 class SignupDoctor:
@@ -342,9 +344,11 @@ class SignupDoctor:
             messagebox.showwarning("Missing Required Fields", "Please fill out all fields.")
             return
 
-        self.controller.create_doctor(email, pw, first, last, spec)
-        messagebox.showinfo("Signed Up", "User created successfully!")
-        self.show_login()
+        if self.controller.create_doctor(email, pw, first, last, spec):
+            messagebox.showinfo("Signed Up", "User created successfully!")
+            self.show_login()
+        else:
+            messagebox.showerror("Sign Up Error", "There was an issue with creating your account")
 
     def show_login(self):
         self.signup_frame.destroy()
@@ -415,9 +419,11 @@ class SignupPatient:
             messagebox.showwarning("Missing Required Fields", "Please fill out all fields.")
             return
 
-        self.controller.create_patient(email, pw, first, last, age, insurance)
-        messagebox.showinfo("Signed Up", "User created successfully!")
-        self.show_login()
+        if self.controller.create_patient(email, pw, first, last, age, insurance):
+            messagebox.showinfo("Signed Up", "User created successfully!")
+            self.show_login()
+        else:
+            messagebox.showerror("Sign Up Error", "There was an issue with creating your account")
 
     def show_login(self):
         self.signup_frame.destroy()
