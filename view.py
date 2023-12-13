@@ -242,18 +242,18 @@ class View:
     
     def create_docsPage(self, frame):
         label = tk.Label(frame, text="All Doctors")
-        self.search_doc = tk.Entry(frame)
-        search_doc_btn = tk.Button(frame, text="Search", command=self.controller.search_docs)
+        self.search_doc = tk.Entry(frame, width=35)
+        search_doc_btn = tk.Button(frame, text="Search", command=self.controller.search_docs, width=25)
 
         self.selected_filter = tk.StringVar()
         self.selected_filter.set("Name")
         self.filter_options = ["Name", "Insurance", "Specialization"]
-        self.filter_drop = ttk.Combobox(frame, values=self.filter_options, textvariable=self.selected_filter, state="readonly")
+        self.filter_drop = ttk.Combobox(frame, values=self.filter_options, textvariable=self.selected_filter, state="readonly", width=25)
         self.filter_drop.current(self.filter_options.index(self.selected_filter.get()))
 
         self.docs_list = tk.Listbox(frame, selectmode=tk.SINGLE, width=50, height=20)
-        self.viewdoc_btn = tk.Button(frame, text="View Doctor Info", command=self.controller.view_docs)
-        self.refreshdoc_btn = tk.Button(frame, text="Refresh All", command=self.controller.update_docsList)
+        self.viewdoc_btn = tk.Button(frame, text="View Doctor Info", command=self.controller.view_docs, width=15)
+        self.refreshdoc_btn = tk.Button(frame, text="Refresh All", command=self.controller.update_docsList, width=15)
 
         label.grid(row=0, column=1, padx=10, pady=10)
         self.filter_drop.grid(row=1, column=0, padx=5, pady=5, sticky='e')

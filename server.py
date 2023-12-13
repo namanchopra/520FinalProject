@@ -147,6 +147,26 @@ class Server:
         val = (name,)
         return self.get_single(self._query(stmnt, val))
 
+    def get_doc_by_first(self, name):
+        stmnt = "SELECT * FROM doctor WHERE firstname = %s"
+        val = (name,)
+        return self._query(stmnt, val)
+
+    def get_doc_by_last(self, name):
+        stmnt = "SELECT * FROM doctor WHERE lastname = %s"
+        val = (name,)
+        return self._query(stmnt, val)
+
+    def get_doc_by_name(self, first, last):
+        stmnt = "SELECT * FROM doctor WHERE firstname = %s AND lastname = %s"
+        val = (first, last)
+        return self._query(stmnt, val)
+
+    def get_docinsurance(self, id):
+        stmnt = "SELECT * FROM docinsure WHERE insure = %s"
+        val = (id,)
+        return self._query(stmnt, val)
+
     # CREATE
     def add_prescription(self, pat, doc, prescrip, dosage, expiry):
         stmnt = "INSERT INTO prescription (pat, doc, prescrip, dosage, expiry) VALUES (%s, %s, %s, %s, %s)"

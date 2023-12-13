@@ -113,3 +113,32 @@ class Model:
     def id_to_provider(self, id):
         insurance = self.server.get_insurance(id)
         return insurance[1]
+
+    def search_doc_name(self, search):
+        full_results = []
+        if " " in search:
+            search = search.split(" ")
+            if len(search) == 2 or (len(search) == 3 and "dr" in search[0].lower()):
+                first, last = search[-2:]
+                result = self.server.get_doc_by_name(first, last)
+                for r in result:
+                    if r not in full_results:
+                        full_results.append(r)
+            else:
+                return full_results
+        else:
+            result = self.server.get_doc_by_first(search)
+            for r in result:
+                if r not in full_results:
+                    full_results.append(r)
+            result = self.server.get_doc_by_last(search)
+            for r in result:
+                if r not in full_results:
+                    full_results.append(r)
+        return full_results
+
+    def search_doc_insurance(self, search):
+        pass
+
+    def search_doc_spec(self, search):
+        pass

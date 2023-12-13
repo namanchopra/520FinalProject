@@ -29,10 +29,11 @@ class Controller:
         last = self.view.last_pat.get()
         age = self.view.age_pat.get()
         insurance = self.view.insurance_pat.get()
-        insurance = self.model.server.get_insurance_by_name(insurance)[0]
+        insurance = self.model.server.get_insurance_by_name(insurance)
         if insurance is None:
             messagebox.showwarning("Unknown Insurance", "We don't have the insurance provider you entered in our database")
             return False
+        insurance = insurance[0]
         if email != "" and first != "" and last != "" and age != "" and insurance != "":
             try:
                 age = int(age)
@@ -178,16 +179,22 @@ class Controller:
             messagebox.showwarning("No Doctor Selected", "Please select a doctor to view details.")
 
     def search_docs(self):
-        if self.view.search_doc.get() != "":
+        self.view.docs_list.delete(0, tk.END)
+        search = self.view.search_doc.get()
+        doctors = []
+        if search != "":
             option = self.view.filter_options.index(self.view.selected_filter.get())
             if option == 0:
-                pass # search by name
+                doctors = self.model.search_doc_name(search)
             elif option == 1:
-                pass # search by insurance
+                doctors = self.model.search_doc_insurance(search)
             elif option == 2:
-                pass # search by specialization
+                doctors = self.model.search_doc_spec(search)
             else:
                 return False
+            for doc in doctors:
+                info = f"{doc[0]} - {doc[3]}, {doc[4]}, {doc[5]}"
+                self.view.docs_list.insert(tk.END, info)
         else:
             self.update_docsList()
             
