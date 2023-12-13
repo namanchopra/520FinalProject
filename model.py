@@ -138,7 +138,15 @@ class Model:
         return full_results
 
     def search_doc_insurance(self, search):
-        pass
+        results = []
+        insurance = self.server.get_insurance_by_name(search)
+        if insurance is not None:
+            docs = self.server.get_docinsurance(insurance[0])
+            for doc in docs:
+                results.append(self.server.get_doctor(doc[0]))
+        return results
 
     def search_doc_spec(self, search):
-        pass
+        results = []
+        results = self.server.get_doc_by_spec(search)
+        return results

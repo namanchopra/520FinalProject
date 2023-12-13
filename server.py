@@ -162,6 +162,11 @@ class Server:
         val = (first, last)
         return self._query(stmnt, val)
 
+    def get_doc_by_spec(self, spec):
+        stmnt = "SELECT * FROM doctor WHERE spec = %s"
+        val = (spec,)
+        return self._query(stmnt, val)
+
     def get_docinsurance(self, id):
         stmnt = "SELECT * FROM docinsure WHERE insure = %s"
         val = (id,)
