@@ -112,6 +112,9 @@ class View:
         elif tab_name == "Doctors":
             self.create_docsPage(frame)
             self.controller.update_docsList()
+        elif tab_name == "Users":
+            self.create_usersPage(frame)
+            self.controller.update_usersList()
 
     def create_patientPortal(self, frame):
         label = tk.Label(frame, text="My Info")
@@ -262,6 +265,36 @@ class View:
         self.docs_list.grid(row=2, column=0, columnspan=3, pady=5)
         self.viewdoc_btn.grid(row=3, column=0, pady=5, sticky='e')
         self.refreshdoc_btn.grid(row=3, column=2, pady=5, sticky='w')
+
+        for i in range(3):
+            frame.columnconfigure(i, weight=1)
+        for i in range(4):
+            frame.rowconfigure(i, weight=1)
+
+    def create_usersPage(self, frame):
+        label = tk.Label(frame, text="All Users")
+        self.search_users = tk.Entry(frame, width=35)
+        search_users_btn = tk.Button(frame, text="Search", command=self.controller.search_users, width=25)
+
+        self.selected_filter = tk.StringVar()
+        self.selected_filter.set("ID")
+        self.filter_options = ["ID", "Name", "Email"]
+        self.filter_drop = ttk.Combobox(frame, values=self.filter_options, textvariable=self.selected_filter, state="readonly", width=25)
+        self.filter_drop.current(self.filter_options.index(self.selected_filter.get()))
+
+        self.users_list = tk.Listbox(frame, selectmode=tk.SINGLE, width=50, height=20)
+        self.view_usr_btn = tk.Button(frame, text="View User Info", command=self.controller.view_user, width=15)
+        self.delete_usr_btn = tk.Button(frame, text="Delete User", command=self.controller.delete_user, width=15)
+        self.refresh_usr_btn = tk.Button(frame, text="Refresh All", command=self.controller.update_usersList, width=15)
+
+        label.grid(row=0, column=1, padx=10, pady=10)
+        self.filter_drop.grid(row=1, column=0, padx=5, pady=5, sticky='e')
+        self.search_users.grid(row=1, column=1, padx=5, pady=5)
+        search_users_btn.grid(row=1, column=2, padx=5, pady=5, sticky='w')
+        self.users_list.grid(row=2, column=0, columnspan=3, pady=5)
+        self.view_usr_btn.grid(row=3, column=0, pady=5, sticky='e')
+        self.delete_usr_btn.grid(row=3, column=1, pady=5)
+        self.refresh_usr_btn.grid(row=3, column=2, pady=5, sticky='w')
 
         for i in range(3):
             frame.columnconfigure(i, weight=1)

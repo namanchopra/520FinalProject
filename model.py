@@ -53,7 +53,6 @@ class Model:
         return self.server.update_patient(id, email, pw, first, last, age, insurance)
 
     def update_doctor(self):
-        print(self.user)
         id, email, pw, first, last, spec = self.user
         return self.server.update_doctor(id, email, pw, first, last, spec)
 
@@ -73,6 +72,9 @@ class Model:
 
     def get_all_doctors(self):
         return self.server.get_all_doctors()
+
+    def get_all_patients(self):
+        return self.server.get_all_patients()
 
     def filter_docs(self, search, col):
         if col == "specialization":
@@ -141,7 +143,7 @@ class Model:
         results = []
         insurance = self.server.get_insurance_by_name(search)
         if insurance is not None:
-            docs = self.server.get_docinsurance(insurance[0])
+            docs = self.server.get_doc_by_insurance(insurance[0])
             for doc in docs:
                 results.append(self.server.get_doctor(doc[0]))
         return results
@@ -150,3 +152,41 @@ class Model:
         results = []
         results = self.server.get_doc_by_spec(search)
         return results
+
+    def search_usr_id(self, search):
+        pats = []
+        docs = []
+        pat = self.server.get_patient(search)
+        if pat is not None: pats.append(pat)
+        doc = self.server.get_doctor(search)
+        if doc is not None: docs.append(doc)
+        return pats, docs
+
+    def search_usr_name(self, search):
+        pats = []
+        docs = []
+        pat = None
+        if " " in search:
+            pat_split = search.split(" ")
+            if len(pat_split) == 2:
+                pat = self.server.get_patient_by_name(pat_split[0], pat_split[1])
+                if pat is not None and pat not in pats: pats += [pat]
+        else:
+            pat = self.server.get_patient_by_first(search)
+            for p in pat:
+                if p is not None and p not in pats: pats += [p]
+            pat = self.server.get_patient_by_last(search)
+            for p in pat:
+                if p is not None and p not in pats: pats += [p]
+
+        docs = self.search_doc_name(search)
+        return pats, docs
+
+    def search_usr_email(self, search):
+        pats = []
+        docs = []
+        pat = self.server.get_patient_by_email(search)
+        if pat is not None and pat not in pats: pats += [pat]
+        doc = self.server.get_doc_by_email(search)
+        if doc is not None and doc not in docs: docs += [doc]
+        return pats, docs

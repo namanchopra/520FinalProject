@@ -137,6 +137,30 @@ class Server:
         result = self._query(stmnt, val)
         return self.get_single(result)
 
+    def get_patient_by_first(self, first_name):
+        stmnt = "SELECT * FROM patient WHERE firstname = %s"
+        val = (first_name,)
+        result = self._query(stmnt, val)
+        return result
+
+    def get_patient_by_last(self, last_name):
+        stmnt = "SELECT * FROM patient WHERE lastname = %s"
+        val = (last_name,)
+        result = self._query(stmnt, val)
+        return result
+
+    def get_patient_by_email(self, email):
+        stmnt = "SELECT * FROM patient WHERE email = %s"
+        val = (email,)
+        result = self._query(stmnt, val)
+        return self.get_single(result)
+
+    def get_doc_by_email(self, email):
+        stmnt = "SELECT * FROM doctor WHERE email = %s"
+        val = (email,)
+        result = self._query(stmnt, val)
+        return self.get_single(result)
+
     def get_insurance(self, id):
         stmnt = "SELECT * FROM insurance WHERE id = %s"
         val = (id,)
@@ -167,8 +191,13 @@ class Server:
         val = (spec,)
         return self._query(stmnt, val)
 
-    def get_docinsurance(self, id):
+    def get_doc_by_insurance(self, id):
         stmnt = "SELECT * FROM docinsure WHERE insure = %s"
+        val = (id,)
+        return self._query(stmnt, val)
+
+    def get_insurance_by_doc(self, id):
+        stmnt = "SELECT * FROM docinsure WHERE doc = %s"
         val = (id,)
         return self._query(stmnt, val)
 

@@ -174,7 +174,13 @@ class Controller:
         if selection:
             doc = self.view.docs_list.get(selection).split(" ")[0]
             doc = self.model.server.get_doctor(doc)
-            messagebox.showinfo(f"Doctor {doc[3]} {doc[4]}", f"First name: {doc[3]}, Last name: {doc[4]}, Specialty: {doc[5]}, Email: {doc[1]}")
+            insurance = self.model.server.get_insurance_by_doc(doc[0])
+            info = ""
+            for i in insurance:
+                name = self.model.id_to_provider(i[1])
+                info += f"{name}, "
+            info = info[:-2] if insurance is not None else info
+            messagebox.showinfo(f"Doctor {doc[3]} {doc[4]}", f"First name: {doc[3]}, Last name: {doc[4]}, Specialty: {doc[5]}, Email: {doc[1]}, Accepts: {info}")
         else:
             messagebox.showwarning("No Doctor Selected", "Please select a doctor to view details.")
 
@@ -197,7 +203,77 @@ class Controller:
                 self.view.docs_list.insert(tk.END, info)
         else:
             self.update_docsList()
-            
+
+    def update_usersList(self):
+        self.view.users_list.delete(0, tk.END)
+        docs = self.model.get_all_doctors()
+        pats = self.model.get_all_patients()
+        for doc in docs:
+            info = f"Doctor {doc[0]} - {doc[1]}, {doc[3]}, {doc[4]}"
+            self.view.users_list.insert(tk.END, info)
+        for pat in pats:
+            info = f"Patient {pat[0]} - {pat[1]}, {pat[3]}, {pat[4]}"
+            self.view.users_list.insert(tk.END, info)
+
+    def view_user(self):
+        selection = self.view.users_list.curselection()
+        if selection:
+            uauth, id, _, email, first, last = self.view.users_list.get(selection).split(" ")
+            if uauth == "Doctor":
+                doc = self.model.server.get_doctor(id)
+                info = f"id: {doc[0]}, email: {doc[1]}, first: {doc[3]}, last: {doc[4]}"
+                messagebox.showinfo(f"Doctor {doc[0]}", info)
+            elif uauth == "Patient":
+                pat = self.model.server.get_patient(id)
+                info = f"id: {pat[0]}, email: {pat[1]}, first: {pat[3]}, last: {pat[4]}"
+                messagebox.showinfo(f"Patient {pat[0]}", info)
+        else:
+            messagebox.showwarning("No User Selected", "Please select a user to view details.")
+
+    def delete_user(self):
+        selection = self.view.users_list.curselection()
+        if selection:
+            uauth, id, _, email, first, last = self.view.users_list.get(selection).split(" ")
+            first = first[:-1]
+            last = last
+            confirm = messagebox.askyesno("Confirmation", f"Are you sure you want to delete user {id} {first} {last}?")
+            if confirm:
+                result  = False
+                if uauth == "Doctor":
+                    result = self.model.server.delete_doctor(id)
+                elif uauth == "Patient":
+                    result = self.model.server.delete_patient(id)
+                if not result:
+                    messagebox.showerror("Deletion Error", "There was an issue deleting the selected user.")
+                else:
+                    self.search_users() # basically a refresh call, but brings back the user's previous search instead
+            else:
+                return False
+
+    def search_users(self):
+        self.view.users_list.delete(0, tk.END)
+        search = self.view.search_users.get()
+        pats = []
+        docs = []
+        if search != "":
+            option = self.view.filter_options.index(self.view.selected_filter.get())
+            if option == 0:
+                pats, docs = self.model.search_usr_id(search)
+            elif option == 1:
+                pats, docs = self.model.search_usr_name(search)
+            elif option == 2:
+                pats, docs = self.model.search_usr_email(search)
+            else:
+                return False
+
+            for doc in docs:
+                info = f"Doctor {doc[0]} - {doc[1]}, {doc[3]}, {doc[4]}"
+                self.view.users_list.insert(tk.END, info)
+            for pat in pats:
+                info = f"Patient {pat[0]} - {pat[1]}, {pat[3]}, {pat[4]}"
+                self.view.users_list.insert(tk.END, info)
+        else:
+            self.update_usersList()
 
     def create_patient(self, email, pw, first, last, age, insurance):
         insurance = self.model.server.get_insurance_by_name(insurance)
