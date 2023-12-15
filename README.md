@@ -12,7 +12,11 @@ Patients may or may not have insurance
 
 Doctors might be able to accept some insurance providers, but not others.
 
-Users are able to search for doctors by their name, specialization and 
+Users are able to search for doctors by their name, specialization and the insurance that they accept.
+
+Administrators can search through all patient and doctor accounts, only viewing their name, and email.
+
+A new user can sign up as either a doctor or a patient.
 
 ### Build & Run Patient Tracker
 The app is designed to run with Python 3 and MySQL
