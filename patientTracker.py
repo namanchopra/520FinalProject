@@ -3,6 +3,7 @@ from controller import Controller
 import tkinter as tk
 
 class PatientTracker:
+    """Used to create an instance of the app altogether with MVC components"""
     def __init__(self):
         self.root = tk.Tk()
         self.root.configure(bg="#4682b5")

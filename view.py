@@ -5,6 +5,7 @@ from model import Model
 from tkinter import messagebox
 
 class View:
+    """View class manages all aspects of front-end that the user sees and user controls/manipulation to the controller"""
     def __init__(self, root: tk.Tk, controller, model: Model):
         self.root = root
         self.controller = controller
@@ -58,20 +59,24 @@ class View:
                             }
 
     def logout(self):
+        """destroys frames and root to prepare for logout"""
         for frame in self.tab_frames.values():
             frame.destroy()
         self.root.destroy()
         self.controller.logout()
 
     def signup_patient(self):
+        """replaces login from with patient signup"""
         self.login_frame.destroy()
         SignupPatient(self.root, self.controller, self.model)
 
     def signup_doctor(self):
+        """replaces login from with doctor signup"""
         self.login_frame.destroy()
         SignupDoctor(self.root, self.controller, self.model)
 
     def show_tabs(self, authorized_tabs):
+        """make all tabs in a user's authorized tabs"""
         for tab_name in authorized_tabs:
             frame = tk.Frame(self.tabControl, bg=self.color)
             self.create_tab(tab_name, frame)
@@ -87,6 +92,7 @@ class View:
         self.logout_btn.pack(pady=10, padx=10)
 
     def on_tab_change(self, event):
+        """change content based on tab"""
         current_tab = self.tabControl.select()
         tab_name = self.tabControl.tab(current_tab, "text")
         if tab_name in self.tab_descrip.keys():
@@ -96,6 +102,7 @@ class View:
         self.content_label.config(text=content)
 
     def create_tab(self, tab_name, frame):
+        """create content for a page given its name"""
         if tab_name == "Patient Portal":
             self.create_patientPortal(frame)
         elif tab_name == "Doctor Portal":
@@ -117,6 +124,7 @@ class View:
             self.controller.update_usersList()
 
     def create_patientPortal(self, frame):
+        """Create content for the patient's home page"""
         label = tk.Label(frame, text="My Info")
 
         self.icon = ImageTk.PhotoImage(Image.open("./img/user.png").resize((100,100)))
@@ -164,6 +172,7 @@ class View:
             frame.rowconfigure(i, weight=1)
 
     def create_doctorPortal(self, frame):
+        """Create content for the doctor's home page"""
         label = tk.Label(frame, text="My Info")
         self.icon = ImageTk.PhotoImage(Image.open("./img/doc.png").resize((100,100)))
         icon_label = tk.Label(frame, image=self.icon, bg=self.color)
@@ -204,6 +213,7 @@ class View:
             frame.rowconfigure(i, weight=1)
 
     def create_patientPage(self, frame):
+        """Create content for the doctor's patient page"""
         label = tk.Label(frame, text="My Patients")
         self.patient_list = tk.Listbox(frame, selectmode=tk.SINGLE, width=50, height=20)
         self.records_btn_d = tk.Button(frame, text="View Medical Records", command=self.controller.view_records)
@@ -216,6 +226,7 @@ class View:
         self.show_patients = True
 
     def create_recordsPage(self, frame):
+        """Create content for the patient's records page"""
         label = tk.Label(frame, text="My Records")
         self.records_list = tk.Listbox(frame, selectmode=tk.SINGLE, width=50, height=20)
         self.records_btn_p = tk.Button(frame, text="View Medical Records", command=self.controller.view_records)
@@ -227,6 +238,7 @@ class View:
         self.refresh_btn_p.pack(pady=5)
 
     def create_prescriptionPage(self, frame):
+        """Create content for the patient and doctor's prescription page"""
         label = tk.Label(frame, text="My Prescriptions")
         self.prescrip_list = tk.Listbox(frame, selectmode=tk.SINGLE, width=50, height=20)
         self.prescrip_btn = tk.Button(frame, text="View Prescription", command=self.controller.view_prescrip)
@@ -244,6 +256,7 @@ class View:
             self.add_presc_btn.pack(pady=5)
     
     def create_docsPage(self, frame):
+        """Create content for the doctor search page"""
         label = tk.Label(frame, text="All Doctors")
         self.search_doc = tk.Entry(frame, width=35)
         search_doc_btn = tk.Button(frame, text="Search", command=self.controller.search_docs, width=25)
@@ -272,6 +285,7 @@ class View:
             frame.rowconfigure(i, weight=1)
 
     def create_usersPage(self, frame):
+        """Create content for the admin's users page"""
         label = tk.Label(frame, text="All Users")
         self.search_users = tk.Entry(frame, width=35)
         search_users_btn = tk.Button(frame, text="Search", command=self.controller.search_users, width=25)
@@ -302,6 +316,7 @@ class View:
             frame.rowconfigure(i, weight=1)
 
     def create_prescrip_window(self):
+        """Create popup window to create a new prescription"""
         prescription_window = tk.Toplevel(self.controller.root)
         prescription_window.title("Add New Prescription")
         prescription_window.geometry("250x300")

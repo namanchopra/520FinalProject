@@ -45,18 +45,20 @@ class Server:
             return False
 
     def get_single(self, result):
+        """If a single value is expected, return only that value"""
         if len(result) == 1:
             return result[0]
         else:
             return None
 
-    # READ
     def authenticate(self, table, email, pw):
+        """get user based on their email and pw"""
         stmnt = "SELECT * FROM " + table + " WHERE email = %s AND pw = %s"
         val = (email, pw)
         result = self._query(stmnt, val)
         return self.get_single(result)
 
+    # READ
     def get_all_patients(self):
         stmnt = "SELECT * FROM patient"
         result = self._query(stmnt)

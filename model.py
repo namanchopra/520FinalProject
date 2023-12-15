@@ -38,6 +38,7 @@ class Model:
         return self.server.add_patient(email, pw, first, last, age, insurance)
 
     def get_docs_patients(self):
+        """get all of a doctor's patients"""
         pats = self.server.docs_patients(self.user[0])
         result = []
         for pat in pats:
@@ -45,6 +46,7 @@ class Model:
         return result
     
     def get_patient_records(self, pat):
+        """get all of a patient's records"""
         result = self.server.get_patient_records(pat)
         return result
 
@@ -109,14 +111,16 @@ class Model:
         return record
 
     def log(self, event):
-        """logs an action to the database"""
+        """logs an action to the database NEEDS IMPLEMENTATION"""
         pass
 
     def id_to_provider(self, id):
+        """get insurance provider name from id"""
         insurance = self.server.get_insurance(id)
         return insurance[1]
 
     def search_doc_name(self, search):
+        """return all results for a doctor's name"""
         full_results = []
         if " " in search:
             search = search.split(" ")
@@ -140,6 +144,7 @@ class Model:
         return full_results
 
     def search_doc_insurance(self, search):
+        """return all results for doctors with searched insurance name"""
         results = []
         insurance = self.server.get_insurance_by_name(search)
         if insurance is not None:
@@ -154,6 +159,7 @@ class Model:
         return results
 
     def search_usr_id(self, search):
+        """get patients and doctors with specified id"""
         pats = []
         docs = []
         pat = self.server.get_patient(search)
@@ -163,6 +169,7 @@ class Model:
         return pats, docs
 
     def search_usr_name(self, search):
+        """returns all patients and doctors with specified name"""
         pats = []
         docs = []
         pat = None
@@ -183,6 +190,7 @@ class Model:
         return pats, docs
 
     def search_usr_email(self, search):
+        """returns patients and doctors with specified email"""
         pats = []
         docs = []
         pat = self.server.get_patient_by_email(search)

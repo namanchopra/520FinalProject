@@ -90,6 +90,7 @@ class Controller:
             self.view.records_list.insert(tk.END, info)
 
     def view_records(self):
+        """open information messagebox for user's current selection or repopulate records list with patient's records if doctor"""
         if self.model.auth == "doctor":
             selection = self.view.patient_list.curselection()
             if selection:
@@ -130,6 +131,7 @@ class Controller:
             self.view.prescrip_list.insert(tk.END, info)
 
     def view_prescrip(self):
+        """open information messagebox for user's current selection"""
         selection = self.view.prescrip_list.curselection()
         if selection:
             prescrip = self.view.prescrip_list.get(selection).split(" ")[0]
@@ -170,6 +172,7 @@ class Controller:
             self.view.docs_list.insert(tk.END, info)
 
     def view_docs(self):
+        """open information messagebox for user's current selection"""
         selection = self.view.docs_list.curselection()
         if selection:
             doc = self.view.docs_list.get(selection).split(" ")[0]
@@ -185,6 +188,7 @@ class Controller:
             messagebox.showwarning("No Doctor Selected", "Please select a doctor to view details.")
 
     def search_docs(self):
+        """populate the docs_list with information based on search category and term"""
         self.view.docs_list.delete(0, tk.END)
         search = self.view.search_doc.get()
         doctors = []
@@ -216,9 +220,10 @@ class Controller:
             self.view.users_list.insert(tk.END, info)
 
     def view_user(self):
+        """open information messagebox for user's current selection"""
         selection = self.view.users_list.curselection()
         if selection:
-            uauth, id, _, email, first, last = self.view.users_list.get(selection).split(" ")
+            uauth, id, _, _, _, _ = self.view.users_list.get(selection).split(" ")
             if uauth == "Doctor":
                 doc = self.model.server.get_doctor(id)
                 info = f"id: {doc[0]}, email: {doc[1]}, first: {doc[3]}, last: {doc[4]}"
@@ -231,9 +236,10 @@ class Controller:
             messagebox.showwarning("No User Selected", "Please select a user to view details.")
 
     def delete_user(self):
+        """handles user deletion button"""
         selection = self.view.users_list.curselection()
         if selection:
-            uauth, id, _, email, first, last = self.view.users_list.get(selection).split(" ")
+            uauth, id, _, _, first, last = self.view.users_list.get(selection).split(" ")
             first = first[:-1]
             last = last
             confirm = messagebox.askyesno("Confirmation", f"Are you sure you want to delete user {id} {first} {last}?")
@@ -251,6 +257,7 @@ class Controller:
                 return False
 
     def search_users(self):
+        """populate the users_list with information based on search category and term"""
         self.view.users_list.delete(0, tk.END)
         search = self.view.search_users.get()
         pats = []
@@ -276,6 +283,7 @@ class Controller:
             self.update_usersList()
 
     def create_patient(self, email, pw, first, last, age, insurance):
+        """used to signup as a new patient"""
         insurance = self.model.server.get_insurance_by_name(insurance)
         if insurance is not None:
             return self.model.new_patient(email, pw, first, last, age, insurance[0])
@@ -284,6 +292,7 @@ class Controller:
             return False
 
     def create_doctor(self, email, pw, first, last, spec):
+        """used to signup as a new doctor"""
         return self.model.new_doctor(email, pw, first, last, spec)
 
     def logout(self):
